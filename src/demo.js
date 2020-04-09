@@ -29,7 +29,8 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { foodMenus } from "./data";
-import { FoodArea } from "./food";
+// import { FoodArea } from "./food";
+import { FoodArea } from "./FoodMenu";
 import { GuestOrder } from "./guestOrder";
 const useStyles = makeStyles(theme => ({
   root: {
