@@ -52,20 +52,20 @@ const stripePromise = loadStripe("pk_test_75b75lAeCG8hV3b7mMzaLbiS00Wid0wpJD");
 export default function SimpleExpansionPanel() {
   const classes = useStyles();
   const [orderDetails, setOrderDetails] = useState([
-    {
-      Id: "",
-      guestId: "",
-      qty: 2,
-      menuId: "",
-      subTotal: 0,
-      price: 0,
-      otherCharges: [
-        {
-          menuItemDetailId: "",
-          extraCharge: 0
-        }
-      ]
-    }
+    // {
+    //   Id: "",
+    //   guestId: "",
+    //   qty: 2,
+    //   menuId: "",
+    //   subTotal: 0,
+    //   price: 0,
+    //   otherCharges: [
+    //     {
+    //       menuItemDetailId: "",
+    //       extraCharge: 0
+    //     }
+    //   ]
+    // }
   ]);
 
   const [guests, setGuests] = useState([
@@ -84,103 +84,47 @@ export default function SimpleExpansionPanel() {
     total: 0
   });
 
-  Array.prototype.remove = function(from, to) {
-    var rest = this.slice((to || from) + 1 || this.length);
-    this.length = from < 0 ? this.length + from : from;
-    return this.push.apply(this, rest);
-  };
-  function uuidv4() {
-    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-      (
-        c ^
-        (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-      ).toString(16)
-    );
-  }
-  function findOrderDetailByMenuId(array, menuId, guestId) {
-    // orderDetails.findIndex(od=>{return od.menduId=men});
-    return array.find(element => {
-      return element.menuId === menuId;
-    });
-  }
+  useEffect(() => {
+    updateGuestsTotal();
+  }, [orderDetails]);
 
-  function getIndex(value, arr, prop) {
-    console.log("Finding Index of " + value);
-    for (var i = 0; i < arr.length; i++) {
-      if (arr[i][prop] === value) {
-        return i;
-      }
-    }
-    return -1; //to handle the case where the value doesn't exist
-  }
-
-  function getGuestItemIndex(menuId, guestId) {
-    for (var i = 0; i < orderDetails.length; i++) {
-      if (
-        orderDetails[i]["menuId"] === menuId &&
-        orderDetails[i]["guestId"] === guestId
-      ) {
-        return i;
-      }
-    }
-    return -1; //to handle the case where the value doesn't exist
-  }
   //const GuestContext = React.createContext(orderDetails);
   const updateGuestsTotal = () => {
     var helper = [];
     var results = orderDetails.reduce(function(r, o) {
+      //console.log(" guest " + o.guestId);
       var key = o.guestId;
       if (!helper[key]) {
         helper[key] = Object.assign(
           {},
-          { guestId: r.guestId, amount: r.subTotal, qty: r.qty }
+          { guestId: o.guestId, amount: o.subTotal, qty: o.qty }
         );
         r.push(helper[key]);
       } else {
-        helper[key].amount += r.subTotal;
-        helper[key].qty += r.qty;
+        helper[key].amount += o.subTotal;
+        helper[key].qty += o.qty;
       }
       return r;
     }, []);
 
-    console.log();
-  };
-  const updateGuests = guestIndex => {
-    if (guestIndex >= 0) {
-      let newArr = [...guests];
-      let guestAmount = 0;
-      let guestItems = 0;
-      orderDetails.forEach(od => {
-        if (od.guestId === newArr[guestIndex].guestId) {
-          guestAmount += od.subTotal;
-          guestItems += od.qty;
-        }
-      });
-      newArr[guestIndex].totalAmount = guestAmount;
-      newArr[guestIndex].totalItems = guestItems;
-      // if (isAdded) {
-      //   newArr[guestIndex].totalAmount += qty * price;
-      //   console.log(newArr[guestIndex].totalAmount);
-      //   newArr[guestIndex].totalItems += qty;
-      // } else {
-      //   newArr[guestIndex].totalAmount -= qty * price;
-      //   newArr[guestIndex].totalItems -= qty;
-      // }
-
-      setGuests(newArr);
-      let subTotal = 0;
-      let tax = 0;
-      let totalAmount = 0;
-      guests.forEach(i => {
-        subTotal += i.totalAmount;
-      });
-
-      let oldOrder = order;
-      oldOrder.subTotal = subTotal;
-      oldOrder.tax = 0;
-      oldOrder.total = oldOrder.subTotal + oldOrder.tax;
-      setOrder(oldOrder);
-    }
+    let newArr = [...guests];
+    let subTotal = 0;
+    results.forEach(p => {
+      console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
+      var guestIndex = getIndex(p.guestId, guests, "guestId");
+      if (guestIndex >= 0) {
+        subTotal += p.amount;
+        newArr[guestIndex].totalAmount = p.amount;
+        newArr[guestIndex].totalItems = p.qty;
+      }
+    });
+    setGuests(newArr);
+    let oldOrder = order;
+    oldOrder.subTotal = subTotal;
+    oldOrder.tax = 0;
+    oldOrder.total = oldOrder.subTotal + oldOrder.tax;
+    setOrder(oldOrder);
+    // console.log(results);
   };
 
   const onChangeQty = (
@@ -189,113 +133,12 @@ export default function SimpleExpansionPanel() {
     isAdded,
     otherCharges = undefined
   ) => {
-    console.log(
-      "On Change Qty " +
-        menuItem +
-        " guest " +
-        guestId +
-        " isAdded " +
-        isAdded +
-        " other charges " +
-        otherCharges
-    );
-    //console.log("Qty is added" + isAdded);
-    var guestIndex = getIndex(guestId, guests, "guestId");
+    var guestMenuIndex = getGuestMenuItemIndex(menuItem.id, guestId);
 
-    if (isAdded) {
-      //var foundIndex = getIndex(menuItem.id, orderDetails, "menuId");
-
-      var foundIndex = getGuestItemIndex(menuItem.id, guestId);
-
-      //var isFound = findOrderDetailByMenuId(orderDetails, menuItem.id, "");
-      if (foundIndex >= 0) {
-        // add items
-        let newArr = [...orderDetails];
-        if (otherCharges === undefined) {
-          newArr[foundIndex].qty += 1;
-          newArr[foundIndex].subTotal =
-            newArr[foundIndex].qty * newArr[foundIndex].price;
-          console.log(newArr);
-        } // other charges
-        else {
-          // var chargesIndex=getIndex(otherCharges.id,newArr[foundIndex].otherCharges,"menuItemDetailId") ;
-          // if(chargesIndex>=0)
-          // {
-          //   newArr[foundIndex].otherCharges[chargesIndex]
-          // }
-
-          newArr[foundIndex].otherCharges.push({
-            menuItemDetailId: otherCharges.id,
-            extraCharge: otherCharges.extraCharge
-          });
-        }
-
-        //  updateGuests(guestIndex,newArr[foundIndex]);
-        setOrderDetails(newArr);
-        updateGuests(guestIndex);
-        //isFound.qty += 1;
-        //console.log("Found Item " + isFound.qty);
-      } else {
-        //add new Object
-        var orderDetail = {
-          Id: uuidv4(),
-          guestId: guestId,
-          qty: 1,
-          menuId: menuItem.id,
-          subTotal: menuItem.basePrice,
-          price: menuItem.basePrice,
-          otherCharges: []
-        };
-
-        if (otherCharges !== undefined) {
-          console.log("add charges");
-          orderDetail.otherCharges.push({
-            menuItemDetailId: otherCharges.id,
-            extraCharge: otherCharges.extraCharge
-          });
-        }
-
-        setOrderDetails(oldDetails => [...oldDetails, orderDetail]);
-        updateGuests(guestIndex);
-        // setTheArray(oldArray => [...oldArray, `Entry ${oldArray.length}`]);
-      }
+    if (guestMenuIndex >= 0) {
+      updateGuestOrderDetails(otherCharges, guestMenuIndex, isAdded);
     } else {
-      console.log("Qty is removed to " + menuItem.shortName);
-      // var foundIndex = getIndex(menuItem.id, orderDetails, "menuId");
-      var foundIndex = getGuestItemIndex(menuItem.id, guestId);
-      console.log("FondIndex " + foundIndex);
-      //var isFound = findOrderDetailByMenuId(orderDetails, menuItem.id, "");
-      if (foundIndex >= 0) {
-        // add items
-        let newArr = [...orderDetails];
-
-        if (otherCharges === undefined) {
-          if (newArr[foundIndex].qty > 0) {
-            newArr[foundIndex].qty -= 1;
-            newArr[foundIndex].subTotal =
-              newArr[foundIndex].qty * newArr[foundIndex].price;
-            //  updateGuests(guestIndex, 1, newArr[foundIndex].price, isAdded);
-            setOrderDetails(newArr);
-            updateGuests(guestIndex);
-          } // qty
-        } // otherCharges // other charges
-        else {
-          var chargesIndex = getIndex(
-            otherCharges.id,
-            newArr[foundIndex].otherCharges,
-            "menuItemDetailId"
-          );
-          if (chargesIndex >= 0) {
-            console.log("Removing other charges");
-            newArr[foundIndex].otherCharges.remove(chargesIndex);
-            //updateGuests(guestIndex, 1, newArr[foundIndex].price, isAdded);
-            setOrderDetails(newArr);
-            updateGuests(guestIndex);
-          }
-        }
-        //isFound.qty += 1;
-        //console.log("Found Item " + isFound.qty);
-      } // found index
+      addGuestOrderDetails(guestId, menuItem, otherCharges, isAdded);
     }
   };
 
@@ -313,6 +156,7 @@ export default function SimpleExpansionPanel() {
     };
     setGuests(oldGues => [...oldGues, guest]);
   };
+
   return (
     <div className={classes.root}>
       <div className={classes.root}>
@@ -390,49 +234,101 @@ export default function SimpleExpansionPanel() {
       </div>
     </div>
   );
+
+  Array.prototype.remove = function(from, to) {
+    var rest = this.slice((to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+  };
+
+  function findOrderDetailByMenuId(array, menuId, guestId) {
+    // orderDetails.findIndex(od=>{return od.menduId=men});
+    return array.find(element => {
+      return element.menuId === menuId;
+    });
+  }
+
+  function getIndex(value, arr, prop) {
+    console.log("Finding Index of " + value);
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i][prop] === value) {
+        return i;
+      }
+    }
+    return -1; //to handle the case where the value doesn't exist
+  }
+
+  function getGuestMenuItemIndex(menuId, guestId) {
+    for (var i = 0; i < orderDetails.length; i++) {
+      if (
+        orderDetails[i]["menuId"] === menuId &&
+        orderDetails[i]["guestId"] === guestId
+      ) {
+        return i;
+      }
+    }
+    return -1; //to handle the case where the value doesn't exist
+  }
+  function uuidv4() {
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+      (
+        c ^
+        (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+      ).toString(16)
+    );
+  }
+  function addGuestOrderDetails(guestId, menuItem, otherCharges, isAdded) {
+    if (!isAdded) return;
+    var orderDetail = {
+      Id: uuidv4(),
+      guestId: guestId,
+      qty: 1,
+      menuId: menuItem.id,
+      subTotal: menuItem.basePrice,
+      price: menuItem.basePrice,
+      otherCharges: []
+    };
+    if (otherCharges !== undefined) {
+      console.log("add charges");
+      orderDetail.otherCharges.push({
+        menuItemDetailId: otherCharges.id,
+        extraCharge: otherCharges.extraCharge
+      });
+    }
+    setOrderDetails(oldDetails => [...oldDetails, orderDetail]);
+  }
+
+  function updateGuestOrderDetails(otherCharges, guestMenuIndex, isAdded) {
+    let newArr = [...orderDetails];
+    // for qty update
+    if (otherCharges === undefined) {
+      let qty = 1;
+      if (!isAdded) qty = -1;
+      if (isAdded || (!isAdded && newArr[guestMenuIndex].qty > 0)) {
+        newArr[guestMenuIndex].qty += qty;
+        newArr[guestMenuIndex].subTotal =
+          newArr[guestMenuIndex].qty * newArr[guestMenuIndex].price;
+      }
+      console.log(newArr);
+    } // other charges
+    else {
+      if (isAdded)
+        newArr[guestMenuIndex].otherCharges.push({
+          seq: 1,
+          menuItemDetailId: otherCharges.id,
+          extraCharge: otherCharges.extraCharge
+        });
+      // remove qty
+      else {
+        var chargesIndex = getIndex(
+          otherCharges.id,
+          newArr[guestMenuIndex].otherCharges,
+          "menuItemDetailId"
+        );
+        if (chargesIndex >= 0)
+          newArr[guestMenuIndex].otherCharges.remove(chargesIndex);
+      }
+    } // enf of orher charges
+    setOrderDetails(newArr);
+  } // enf of updated guest order details
 }
-
-// export const GuestOrder = props => {
-//   const classes = useStyles();
-
-//   const foodAreas = foodMenus.map(
-//     area =>
-//       area.menuItems.length > 0 && (
-//         <FoodArea key={area.name} area={area} {...props} />
-//       )
-//   );
-
-//   return (
-//     <div className={classes.root}>
-//       <ExpansionPanel>
-//         <ExpansionPanelSummary
-//           expandIcon={<ExpandMoreIcon />}
-//           aria-controls="panel1a-content"
-//           id="panel1a-header"
-//         >
-//           <Grid container direction="row">
-//             <Grid item xs>
-//               {props.guestName}
-//             </Grid>
-//             <Grid item xs>
-//               {props.totalItems}
-//             </Grid>
-//             <Grid item xs>
-//               &#36;{Number(props.totalAmount).toFixed(2)}
-//               {/* {props.totalAmount} */}
-//             </Grid>
-//           </Grid>
-//         </ExpansionPanelSummary>
-//         <ExpansionPanelDetails className={classes.detailPanel}>
-//           <List
-//             component="nav"
-//             aria-labelledby="nested-list-subheader"
-//             className={classes.root}
-//           >
-//             {foodAreas}
-//           </List>
-//         </ExpansionPanelDetails>
-//       </ExpansionPanel>
-//     </div>
-//   );
-// };
