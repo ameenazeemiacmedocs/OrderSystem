@@ -7,7 +7,6 @@ import {
   useStripe,
   useElements
 } from "@stripe/react-stripe-js";
-import CardForm from "./CardForm";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import {
@@ -32,6 +31,9 @@ import { foodMenus } from "./data";
 // import { FoodArea } from "./food";
 import { FoodArea } from "./FoodMenu";
 import { GuestOrder } from "./guestOrder";
+
+import CardForm from "./Cards/CardForm";
+import SplitForm from "./Cards/SplitForm";
 const useStyles = makeStyles(theme => ({
   root: {
     width: "100%",
@@ -43,6 +45,7 @@ const useStyles = makeStyles(theme => ({
     fontWeight: theme.typography.fontWeightRegular
   },
   column: {},
+  checkout: {},
   detailPanel: {
     [theme.breakpoints.down("xs")]: {
       padding: "3px"
@@ -95,14 +98,19 @@ export default function SimpleExpansionPanel() {
     var results = orderDetails.reduce(function(r, o) {
       //console.log(" guest " + o.guestId);
       var key = o.guestId;
+      let extraCharge = 0;
+      o.otherCharges.forEach(oc => {
+        extraCharge += oc.extraCharge;
+        //console.log("extraCharge " + oc.extraCharge);
+      });
       if (!helper[key]) {
         helper[key] = Object.assign(
           {},
-          { guestId: o.guestId, amount: o.subTotal, qty: o.qty }
+          { guestId: o.guestId, amount: o.subTotal + extraCharge, qty: o.qty }
         );
         r.push(helper[key]);
       } else {
-        helper[key].amount += o.subTotal;
+        helper[key].amount += o.subTotal + extraCharge;
         helper[key].qty += o.qty;
       }
       return r;
@@ -132,14 +140,15 @@ export default function SimpleExpansionPanel() {
     menuItem,
     guestId,
     isAdded,
-    otherCharges = undefined
+    otherCharges = undefined,
+    index = -1
   ) => {
     var guestMenuIndex = getGuestMenuItemIndex(menuItem.id, guestId);
 
     if (guestMenuIndex >= 0) {
-      updateGuestOrderDetails(otherCharges, guestMenuIndex, isAdded);
+      updateGuestOrderDetails(otherCharges, guestMenuIndex, isAdded, index);
     } else {
-      addGuestOrderDetails(guestId, menuItem, otherCharges, isAdded);
+      addGuestOrderDetails(guestId, menuItem, otherCharges, isAdded, index);
     }
   };
 
@@ -220,18 +229,11 @@ export default function SimpleExpansionPanel() {
             }}
           />
         </Box>
-        <Box
-          display="flex"
-          flexDirection="row"
-          justifyContent="flex-start"
-          // sm={6}
-          // width="full"
-        >
-          <Elements stripe={stripePromise}>
-            <CardForm />
-            {/* <ElementDemos demos={demos} /> */}
-          </Elements>
-        </Box>
+
+        <Elements stripe={stripePromise} className={classes.checkout}>
+          <SplitForm />
+          {/* <ElementDemos demos={demos} /> */}
+        </Elements>
       </div>
     </div>
   );
@@ -250,9 +252,20 @@ export default function SimpleExpansionPanel() {
   }
 
   function getIndex(value, arr, prop) {
-    console.log("Finding Index of " + value);
     for (var i = 0; i < arr.length; i++) {
       if (arr[i][prop] === value) {
+        return i;
+      }
+    }
+    return -1; //to handle the case where the value doesn't exist
+  }
+
+  function getChargesIndex(arr, index, menuItemDetailId) {
+    for (var i = 0; i < arr.length; i++) {
+      if (
+        arr[i]["menuItemDetailId"] === menuItemDetailId &&
+        arr[i]["index"] === index
+      ) {
         return i;
       }
     }
@@ -278,7 +291,13 @@ export default function SimpleExpansionPanel() {
       ).toString(16)
     );
   }
-  function addGuestOrderDetails(guestId, menuItem, otherCharges, isAdded) {
+  function addGuestOrderDetails(
+    guestId,
+    menuItem,
+    otherCharges,
+    isAdded,
+    otherChargesSeq
+  ) {
     if (!isAdded) return;
     var orderDetail = {
       Id: uuidv4(),
@@ -292,6 +311,7 @@ export default function SimpleExpansionPanel() {
     if (otherCharges !== undefined) {
       console.log("add charges");
       orderDetail.otherCharges.push({
+        index: otherChargesSeq,
         menuItemDetailId: otherCharges.id,
         extraCharge: otherCharges.extraCharge
       });
@@ -299,7 +319,12 @@ export default function SimpleExpansionPanel() {
     setOrderDetails(oldDetails => [...oldDetails, orderDetail]);
   }
 
-  function updateGuestOrderDetails(otherCharges, guestMenuIndex, isAdded) {
+  function updateGuestOrderDetails(
+    otherCharges,
+    guestMenuIndex,
+    isAdded,
+    otherChargesSeq
+  ) {
     let newArr = [...orderDetails];
     // for qty update
     if (otherCharges === undefined) {
@@ -315,19 +340,25 @@ export default function SimpleExpansionPanel() {
     else {
       if (isAdded)
         newArr[guestMenuIndex].otherCharges.push({
-          seq: 1,
+          index: otherChargesSeq,
           menuItemDetailId: otherCharges.id,
           extraCharge: otherCharges.extraCharge
         });
       // remove qty
       else {
-        var chargesIndex = getIndex(
-          otherCharges.id,
+        // var chargesIndex = getIndex(
+        //   otherCharges.id,
+        //   newArr[guestMenuIndex].otherCharges,
+        //   "menuItemDetailId"
+        // );
+
+        var chargesIndex = getChargesIndex(
           newArr[guestMenuIndex].otherCharges,
-          "menuItemDetailId"
+          otherChargesSeq,
+          otherCharges.id
         );
         if (chargesIndex >= 0)
-          newArr[guestMenuIndex].otherCharges.remove(chargesIndex);
+          newArr[guestMenuIndex].otherCharges.splice(chargesIndex, 1);
       }
     } // enf of orher charges
     setOrderDetails(newArr);

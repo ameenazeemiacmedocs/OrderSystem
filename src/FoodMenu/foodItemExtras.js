@@ -43,7 +43,27 @@ export const MenuChoices = props => {
   //   <CheckBoxChoices itemDetail={ch} />
   // ));
 
-  const handleRadioSelection = (prevChoice, newChoice) => {};
+  const handleRadioSelection = (prevChoice, newChoice) => {
+    if (prevChoice !== null) {
+      props.onChangeQty(
+        props.menuItem,
+        props.guestId,
+        false,
+        prevChoice,
+        props.index
+      );
+      console.log("rd usman " + prevChoice.fullName + " index " + props.index);
+    }
+    console.log("rd usman " + newChoice.fullName);
+
+    props.onChangeQty(
+      props.menuItem,
+      props.guestId,
+      true,
+      newChoice,
+      props.index
+    );
+  };
 
   const handleCheckBox = (checkedItem, isChecked) => {};
 
@@ -105,12 +125,13 @@ export const CheckBoxChoices = props => {
 
   const onCheckboxChange = (e, item) => {
     // props.onChange(item, e.target.checked);
-    console.log(e.target.checked);
+    console.log(e.target.checked + " index " + props.index);
     props.onChangeQty(
       props.menuItem,
       props.guestId,
       e.target.checked,
-      props.itemDetail
+      props.itemDetail,
+      props.index
     );
   };
 
@@ -136,7 +157,7 @@ export const CheckBoxChoices = props => {
             <Typography variant="body1">
               {props.itemDetail.fullName}
               <span style={{ whiteSpace: "nowrap" }}>
-                (&#36; {props.itemDetail.extraCharge})
+                (&#36;{props.itemDetail.extraCharge})
               </span>
             </Typography>
           </Grid>
@@ -211,8 +232,8 @@ export const RadioChoice = props => {
       <ListItem
         className={classes.listChoices}
         dense={true}
-        button
-        onClick={() => props.handleChange(props.itemDetail)}
+        // button
+        //onClick={() => props.handleChange(props.itemDetail)}
       >
         <Grid
           container
