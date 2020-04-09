@@ -203,7 +203,7 @@ const SplitForm = props => {
           variant="contained"
           color="primary"
           size="large"
-          disabled={!stripe && !isFormSubmit && props.totalAmount > 0}
+          disabled={!stripe || props.totalAmount <= 0 || isFormSubmit}
         >
           Pay ${props.totalAmount}
         </Button>
