@@ -16,7 +16,8 @@ import {
   Button,
   Box,
   TextField,
-  InputAdornment
+  InputAdornment,
+  Paper
 } from "@material-ui/core";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -230,11 +231,17 @@ export default function SimpleExpansionPanel() {
             }}
           />
         </Box>
-
-        <Elements stripe={stripePromise} className={classes.checkout}>
-          <SplitForm />
-          {/* <ElementDemos demos={demos} /> */}
-        </Elements>
+        <Paper
+          elevation={3}
+          dispaly="flex"
+          flexDirection="column"
+          justifyContent="flex-end"
+        >
+          <Elements stripe={stripePromise} className={classes.checkout}>
+            <SplitForm totalAmount={order.total} />
+            {/* <ElementDemos demos={demos} /> */}
+          </Elements>
+        </Paper>
       </div>
     </div>
   );

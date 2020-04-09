@@ -7,9 +7,38 @@ import {
   CardExpiryElement
 } from "@stripe/react-stripe-js";
 import axios from "axios";
-
+import { makeStyles } from "@material-ui/core/styles";
+import {
+  Grid,
+  IconButton,
+  Button,
+  Box,
+  TextField,
+  InputAdornment
+} from "@material-ui/core";
 import useResponsiveFontSize from "./useResponsiveFontSize";
+import { flexbox } from "@material-ui/system";
+const useStyles = makeStyles(theme => ({
+  root: {
+    width: "100%",
+    marginBottom: 5,
+    margin: 5,
+    padding: 5,
+    display: flexbox
+  },
 
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    fontWeight: theme.typography.fontWeightRegular
+  },
+  column: {},
+  checkout: {},
+  detailPanel: {
+    [theme.breakpoints.down("xs")]: {
+      padding: "3px"
+    }
+  }
+}));
 const useOptions = () => {
   const fontSize = useResponsiveFontSize();
   const options = useMemo(
@@ -35,10 +64,12 @@ const useOptions = () => {
   return options;
 };
 
-const SplitForm = () => {
+const SplitForm = props => {
+  const classes = useStyles();
   const stripe = useStripe();
   const elements = useElements();
   const options = useOptions();
+  const [isFormSubmit, setIsFormSubmit] = React.useState(false);
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -48,15 +79,15 @@ const SplitForm = () => {
       // form submission until Stripe.js has loaded.
       return;
     }
+    setIsFormSubmit(true);
+    try {
+      const checkout = {
+        MobileNumber: "0344444444",
+        Amount: props.totalAmount
+      };
 
-    const checkout = {
-      MobileNumber: "0344444444",
-      Amount: "10.05"
-    };
-
-    console.log("before call");
-   var checkoutRequest =await axios
-      .post(
+      console.log("before call");
+      var checkoutRequest = await axios.post(
         `https://raffleapi.azurewebsites.net/api/foodmenu/checkout`,
         checkout,
         {
@@ -71,132 +102,113 @@ const SplitForm = () => {
       // .catch(error => {
       //   console.log("error" + error);
       // });
-debugger;
-if(checkoutRequest.status===200)
-{
-     const result = await stripe.confirmCardPayment(checkoutRequest.data, {
-      payment_method: {
-        card: elements.getElement(CardNumberElement),
-        billing_details: { name: checkout.MobileNumber}
-      }
-    });
 
-    if (result.error) {
-      alert(result.error.message);
-      console.log(result.error.message);
-    } else {
-      if (result.paymentIntent.status === "succeeded") {
-        alert("show Success");
+      if (checkoutRequest.status === 200) {
+        const result = await stripe.confirmCardPayment(checkoutRequest.data, {
+          payment_method: {
+            card: elements.getElement(CardNumberElement),
+            billing_details: { name: checkout.MobileNumber }
+          }
+        });
 
-        console.log(result.paymentIntent);
+        if (result.error) {
+          alert(result.error.message);
+          console.log(result.error.message);
+        } else {
+          if (result.paymentIntent.status === "succeeded") {
+            alert("show Success");
+
+            console.log(result.paymentIntent);
+          }
+        }
       }
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setIsFormSubmit(false);
     }
-}
-  
-
-    // const result = await stripe.confirmCardPayment("", {
-    //   payment_method: {
-    //     card: elements.getElement(CardNumberElement),
-    //     billing_details: { name: "ameen" }
-    //   }
-    // });
-
-    // if (result.error) {
-    //   alert(result.error.message);
-    //   console.log(result.error.message);
-    // } else {
-    //   if (result.paymentIntent.status === "succeeded") {
-    //     alert("show Success");
-
-    //     console.log(result.paymentIntent);
-    //   }
-    // }
-
-    // if (result.error) {
-    //   alert(result.error.message);
-    //   // Show error to your customer (e.g., insufficient funds)
-    //   console.log(result.error.message);
-    // } else {
-    //   // The payment has been processed!
-    //   if (result.paymentIntent.status === 'succeeded') {
-
-    //       alert("show Success");
-    //       console.log(result.paymentIntent);
-
-    //     // Show a success message to your customer
-    //     // There's a risk of the customer closing the window before callback
-    //     // execution. Set up a webhook or plugin to listen for the
-    //     // payment_intent.succeeded event that handles any business critical
-    //     // post-payment actions.
-    //   }
-    // const payload = await stripe.createPaymentMethod({
-    //   type: "card",
-    //   card: elements.getElement(CardNumberElement)
-    // });
-    // console.log("[PaymentMethod]", payload);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Card number
-        <CardNumberElement />
-        {/* <CardNumberElement
-          options={options}
-          onReady={() => {
-            console.log("CardNumberElement [ready]");
-          }}
-          onChange={event => {
-            console.log("CardNumberElement [change]", event);
-          }}
-          onBlur={() => {
-            console.log("CardNumberElement [blur]");
-          }}
-          onFocus={() => {
-            console.log("CardNumberElement [focus]");
-          }}
-        /> */}
-      </label>
-      <label>
-        Expiration date
-        <CardExpiryElement
-          options={options}
-          onReady={() => {
-            console.log("CardNumberElement [ready]");
-          }}
-          onChange={event => {
-            console.log("CardNumberElement [change]", event);
-          }}
-          onBlur={() => {
-            console.log("CardNumberElement [blur]");
-          }}
-          onFocus={() => {
-            console.log("CardNumberElement [focus]");
-          }}
-        />
-      </label>
-      <label>
-        CVC
-        <CardCvcElement
-          options={options}
-          onReady={() => {
-            console.log("CardNumberElement [ready]");
-          }}
-          onChange={event => {
-            console.log("CardNumberElement [change]", event);
-          }}
-          onBlur={() => {
-            console.log("CardNumberElement [blur]");
-          }}
-          onFocus={() => {
-            console.log("CardNumberElement [focus]");
-          }}
-        />
-      </label>
-      <button type="submit" disabled={!stripe}>
-        Pay
-      </button>
-    </form>
+    <div className={classes.root}>
+      <form className={classes.root} onSubmit={handleSubmit} noValidate>
+        <label>
+          Card number
+          {/* <TextField
+            label="Card Number"
+            //variant="outlined"
+            size="small"
+           
+            disabled
+            InputProps={{
+              component: {CardNumberElement}
+               
+            }}
+          /> */}
+          {/* <CardNumberElement /> */}
+          <CardNumberElement
+            options={options}
+            onReady={() => {
+              console.log("CardNumberElement [ready]");
+            }}
+            onChange={event => {
+              console.log("CardNumberElement [change]", event);
+            }}
+            onBlur={() => {
+              console.log("CardNumberElement [blur]");
+            }}
+            onFocus={() => {
+              console.log("CardNumberElement [focus]");
+            }}
+          />
+        </label>
+        <label>
+          Expiration date
+          <CardExpiryElement
+            options={options}
+            onReady={() => {
+              console.log("CardNumberElement [ready]");
+            }}
+            onChange={event => {
+              console.log("CardNumberElement [change]", event);
+            }}
+            onBlur={() => {
+              console.log("CardNumberElement [blur]");
+            }}
+            onFocus={() => {
+              console.log("CardNumberElement [focus]");
+            }}
+          />
+        </label>
+        <label>
+          CVC
+          <CardCvcElement
+            options={options}
+            onReady={() => {
+              console.log("CardNumberElement [ready]");
+            }}
+            onChange={event => {
+              console.log("CardNumberElement [change]", event);
+            }}
+            onBlur={() => {
+              console.log("CardNumberElement [blur]");
+            }}
+            onFocus={() => {
+              console.log("CardNumberElement [focus]");
+            }}
+          />
+        </label>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          size="large"
+          disabled={!stripe && !isFormSubmit && props.totalAmount > 0}
+        >
+          Pay ${props.totalAmount}
+        </Button>
+      </form>
+    </div>
   );
 };
 
