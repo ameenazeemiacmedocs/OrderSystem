@@ -55,7 +55,7 @@ const SplitForm = () => {
     };
 
     console.log("before call");
-    axios
+   var checkoutRequest =await axios
       .post(
         `https://raffleapi.azurewebsites.net/api/foodmenu/checkout`,
         checkout,
@@ -64,16 +64,35 @@ const SplitForm = () => {
             "content-type": "application/json"
           }
         }
-      )
-      .then(p => {
-        console.log("sucess " + p.data);
-      })
-      .catch(error => {
-        console.log("error" + error);
-      });
+      );
+      // .then(p => {
+      //   console.log("sucess " + p.data);
+      // })
+      // .catch(error => {
+      //   console.log("error" + error);
+      // });
+debugger;
+if(checkoutRequest.status===200)
+{
+     const result = await stripe.confirmCardPayment(checkoutRequest.data, {
+      payment_method: {
+        card: elements.getElement(CardNumberElement),
+        billing_details: { name: checkout.MobileNumber}
+      }
+    });
 
-    console.log("after call");
-    // console.log(checkoutRequest.json());
+    if (result.error) {
+      alert(result.error.message);
+      console.log(result.error.message);
+    } else {
+      if (result.paymentIntent.status === "succeeded") {
+        alert("show Success");
+
+        console.log(result.paymentIntent);
+      }
+    }
+}
+  
 
     // const result = await stripe.confirmCardPayment("", {
     //   payment_method: {
