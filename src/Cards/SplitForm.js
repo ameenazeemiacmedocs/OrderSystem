@@ -6,6 +6,7 @@ import {
   CardCvcElement,
   CardExpiryElement
 } from "@stripe/react-stripe-js";
+import axios from "axios";
 
 import useResponsiveFontSize from "./useResponsiveFontSize";
 
@@ -48,11 +49,72 @@ const SplitForm = () => {
       return;
     }
 
-    const payload = await stripe.createPaymentMethod({
-      type: "card",
-      card: elements.getElement(CardNumberElement)
-    });
-    console.log("[PaymentMethod]", payload);
+    const checkout = {
+      MobileNumber: "0344444444",
+      Amount: "10.05"
+    };
+
+    console.log("before call");
+    axios
+      .post(
+        `https://raffleapi.azurewebsites.net/api/foodmenu/checkout`,
+        checkout,
+        {
+          headers: {
+            "content-type": "application/json"
+          }
+        }
+      )
+      .then(p => {
+        console.log("sucess " + p.data);
+      })
+      .catch(error => {
+        console.log("error" + error);
+      });
+
+    console.log("after call");
+    // console.log(checkoutRequest.json());
+
+    // const result = await stripe.confirmCardPayment("", {
+    //   payment_method: {
+    //     card: elements.getElement(CardNumberElement),
+    //     billing_details: { name: "ameen" }
+    //   }
+    // });
+
+    // if (result.error) {
+    //   alert(result.error.message);
+    //   console.log(result.error.message);
+    // } else {
+    //   if (result.paymentIntent.status === "succeeded") {
+    //     alert("show Success");
+
+    //     console.log(result.paymentIntent);
+    //   }
+    // }
+
+    // if (result.error) {
+    //   alert(result.error.message);
+    //   // Show error to your customer (e.g., insufficient funds)
+    //   console.log(result.error.message);
+    // } else {
+    //   // The payment has been processed!
+    //   if (result.paymentIntent.status === 'succeeded') {
+
+    //       alert("show Success");
+    //       console.log(result.paymentIntent);
+
+    //     // Show a success message to your customer
+    //     // There's a risk of the customer closing the window before callback
+    //     // execution. Set up a webhook or plugin to listen for the
+    //     // payment_intent.succeeded event that handles any business critical
+    //     // post-payment actions.
+    //   }
+    // const payload = await stripe.createPaymentMethod({
+    //   type: "card",
+    //   card: elements.getElement(CardNumberElement)
+    // });
+    // console.log("[PaymentMethod]", payload);
   };
 
   return (

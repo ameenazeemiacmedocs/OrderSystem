@@ -155,7 +155,7 @@ export const CheckBoxChoices = props => {
         >
           <Grid item xs={8}>
             <Typography variant="body1">
-              {props.itemDetail.fullName}
+              {props.itemDetail.fullName + " "}
               <span style={{ whiteSpace: "nowrap" }}>
                 (&#36;{props.itemDetail.extraCharge})
               </span>
@@ -243,9 +243,9 @@ export const RadioChoice = props => {
         >
           <Grid item xs={8}>
             <Typography variant="body1">
-              {props.itemDetail.fullName}
+              {props.itemDetail.fullName + " "}
               <span style={{ whiteSpace: "nowrap" }}>
-                (&#36; {props.itemDetail.extraCharge})
+                (&#36;{props.itemDetail.extraCharge})
               </span>
             </Typography>
           </Grid>

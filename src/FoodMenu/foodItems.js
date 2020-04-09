@@ -43,6 +43,12 @@ const useStyles = makeStyles(theme => ({
     // width: "auto",
     height: "auto",
     background: "lightgreen"
+  },
+  extrasHeaderText: {
+    fontSize: "11pt",
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "9pt"
+    }
   }
 }));
 
@@ -118,9 +124,9 @@ export const FoodItems = props => {
                 justifyContent: "flex-start"
               }}
             >
-              {props.menuItem.fullName}{" "}
+              {props.menuItem.fullName + " "}
               <span style={{ whiteSpace: "nowrap" }}>
-                (&#36; {props.menuItem.basePrice})
+                (&#36;{props.menuItem.basePrice})
               </span>
             </p>
             {/* <p style={{ flex: 1, justifyContent: "flex-start" }}>
@@ -151,10 +157,14 @@ export const FoodItems = props => {
 
 const StyledBadge = withStyles(theme => ({
   badge: {
-    top: 13,
-    right: -25,
+    top: 11,
+    right: -15,
+    [theme.breakpoints.down("xs")]: {
+      top: 8,
+      right: -15
+    },
     // border: `2px solid red`,
-    padding: "0 14px"
+    padding: "0 4px"
   }
 }))(Badge);
 
@@ -181,7 +191,7 @@ const ExtraItemsExpandable = props => {
       <ListItem
         button
         onClick={() => setOpen(!open)}
-        style={{ padding: "0px" }}
+        // style={{ paddingBottom: "0px" }}
       >
         <Card
           variant="outlined"
@@ -189,7 +199,7 @@ const ExtraItemsExpandable = props => {
         >
           <div className={classes.quantityItemPanelCard}>
             <StyledBadge color="primary" badgeContent={props.index}>
-              <Typography>
+              <Typography className={classes.extrasHeaderText}>
                 {props.menuItem.fullName} (Extra Choices) -
               </Typography>
             </StyledBadge>
