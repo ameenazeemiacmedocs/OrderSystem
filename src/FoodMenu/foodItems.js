@@ -56,6 +56,7 @@ export const FoodItems = props => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [showExtras, setShowExtras] = useState(false);
+  const [expandItem, setExpandItem] = useState(null);
   const hasExtras = props.menuItem.menuItemsChoices.length ? true : false;
 
   const handleClick = () => {
@@ -147,7 +148,12 @@ export const FoodItems = props => {
       {hasExtras && (
         <Collapse in={open} timeout="auto" unmountOnExit>
           {[...Array(props.orderQty)].map((x, i) => (
-            <ExtraItemsExpandable {...props} index={i + 1} />
+            <ExtraItemsExpandable
+              {...props}
+              index={i + 1}
+              open={expandItem}
+              setOpen={setExpandItem}
+            />
           ))}
         </Collapse>
       )}
@@ -169,7 +175,6 @@ const StyledBadge = withStyles(theme => ({
 }))(Badge);
 
 const ExtraItemsExpandable = props => {
-  const [open, setOpen] = useState(false);
   const classes = useStyles();
   const hasExtras = props.menuItem.menuItemsChoices.length ? true : false;
 
@@ -178,7 +183,7 @@ const ExtraItemsExpandable = props => {
         <MenuChoices
           key={p.fullName}
           choice={p}
-          index={props.index}
+          index={props.index + 1}
           {...props}
           // handleRadioSelection={handleRadioSelection}
           // handleCheckBox={handleCheckBox}
@@ -186,11 +191,19 @@ const ExtraItemsExpandable = props => {
       ))
     : null;
 
+  const handleExpandClick = e => {
+    if (props.open === props.index) {
+      props.setOpen(null);
+    } else {
+      props.setOpen(props.index);
+    }
+  };
+
   return (
     <>
       <ListItem
         button
-        onClick={() => setOpen(!open)}
+        onClick={handleExpandClick}
         // style={{ paddingBottom: "0px" }}
       >
         <Card
@@ -211,11 +224,11 @@ const ExtraItemsExpandable = props => {
               alignItems: "center"
             }}
           >
-            {open ? <ExpandLess /> : <ExpandMore />}
+            {props.index === props.open ? <ExpandLess /> : <ExpandMore />}
           </div>
         </Card>
       </ListItem>
-      <Collapse in={open} timeout="auto" unmountOnExit>
+      <Collapse in={props.index === props.open} timeout="auto" unmountOnExit>
         {chList}
       </Collapse>
     </>

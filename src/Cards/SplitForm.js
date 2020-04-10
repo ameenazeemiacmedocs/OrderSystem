@@ -6,6 +6,11 @@ import {
   CardCvcElement,
   CardExpiryElement
 } from "@stripe/react-stripe-js";
+import {
+  StripeTextFieldNumber,
+  StripeTextFieldExpiry,
+  StripeTextFieldCVC
+} from "./commonTextFields";
 import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -128,80 +133,122 @@ const SplitForm = props => {
       setIsFormSubmit(false);
     }
   };
-
   return (
     <div className={classes.root}>
       <form className={classes.root} onSubmit={handleSubmit} noValidate>
         <Grid container spacing={2}>
-          <Grid item xs={12} />
-          <label>
-            Card number
-            <CardNumberElement
-              options={options}
-              onReady={() => {
-                console.log("CardNumberElement [ready]");
-              }}
-              onChange={event => {
-                console.log("CardNumberElement [change]", event);
-              }}
-              onBlur={() => {
-                console.log("CardNumberElement [blur]");
-              }}
-              onFocus={() => {
-                console.log("CardNumberElement [focus]");
-              }}
+          <Grid item xs={12}>
+            <StripeTextFieldNumber
+            // error={Boolean(cardNumberError)}
+            // labelErrorMessage={cardNumberError}
+            // onChange={this.onElementChange(
+            //   "creditCardNumberComplete",
+            //   "cardNumberError"
+            // )}
             />
-          </label>
-        </Grid>
+          </Grid>
+          <Grid item xs={6}>
+            <StripeTextFieldExpiry
+            // error={Boolean(cardNumberError)}
+            // labelErrorMessage={cardNumberError}
+            // onChange={this.onElementChange(
+            //   "creditCardNumberComplete",
+            //   "cardNumberError"
+            // )}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <StripeTextFieldCVC />
+          </Grid>
 
-        <label>
-          Expiration date
-          <CardExpiryElement
-            options={options}
-            onReady={() => {
-              console.log("CardNumberElement [ready]");
-            }}
-            onChange={event => {
-              console.log("CardNumberElement [change]", event);
-            }}
-            onBlur={() => {
-              console.log("CardNumberElement [blur]");
-            }}
-            onFocus={() => {
-              console.log("CardNumberElement [focus]");
-            }}
-          />
-        </label>
-        <label>
-          CVC
-          <CardCvcElement
-            options={options}
-            onReady={() => {
-              console.log("CardNumberElement [ready]");
-            }}
-            onChange={event => {
-              console.log("CardNumberElement [change]", event);
-            }}
-            onBlur={() => {
-              console.log("CardNumberElement [blur]");
-            }}
-            onFocus={() => {
-              console.log("CardNumberElement [focus]");
-            }}
-          />
-        </label>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          size="large"
-          disabled={!stripe || props.totalAmount <= 0 || isFormSubmit}
-        >
-          Pay ${props.totalAmount}
-        </Button>
+          <Grid item xs={12}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              size="large"
+              disabled={!stripe || props.totalAmount <= 0 || isFormSubmit}
+            >
+              Pay ${props.totalAmount}
+            </Button>
+          </Grid>
+        </Grid>
       </form>
     </div>
   );
+  // return (
+  //   <div className={classes.root}>
+  //     <form className={classes.root} onSubmit={handleSubmit} noValidate>
+  //       <Grid container spacing={2}>
+  //         <Grid item xs={12} />
+  //         <label>
+  //           Card number
+  //           <CardNumberElement
+  //             options={options}
+  //             onReady={() => {
+  //               console.log("CardNumberElement [ready]");
+  //             }}
+  //             onChange={event => {
+  //               console.log("CardNumberElement [change]", event);
+  //             }}
+  //             onBlur={() => {
+  //               console.log("CardNumberElement [blur]");
+  //             }}
+  //             onFocus={() => {
+  //               console.log("CardNumberElement [focus]");
+  //             }}
+  //           />
+  //         </label>
+  //       </Grid>
+
+  //       <label>
+  //         Expiration date
+  //         <CardExpiryElement
+  //           options={options}
+  //           onReady={() => {
+  //             console.log("CardNumberElement [ready]");
+  //           }}
+  //           onChange={event => {
+  //             console.log("CardNumberElement [change]", event);
+  //           }}
+  //           onBlur={() => {
+  //             console.log("CardNumberElement [blur]");
+  //           }}
+  //           onFocus={() => {
+  //             console.log("CardNumberElement [focus]");
+  //           }}
+  //         />
+  //       </label>
+  //       <label>
+  //         CVC
+  //         <CardCvcElement
+  //           options={options}
+  //           onReady={() => {
+  //             console.log("CardNumberElement [ready]");
+  //           }}
+  //           onChange={event => {
+  //             console.log("CardNumberElement [change]", event);
+  //           }}
+  //           onBlur={() => {
+  //             console.log("CardNumberElement [blur]");
+  //           }}
+  //           onFocus={() => {
+  //             console.log("CardNumberElement [focus]");
+  //           }}
+  //         />
+  //       </label>
+  //       <Button
+  //         type="submit"
+  //         variant="contained"
+  //         color="primary"
+  //         size="large"
+  //         disabled={!stripe || props.totalAmount <= 0 || isFormSubmit}
+  //       >
+  //         Pay ${props.totalAmount}
+  //       </Button>
+  //     </form>
+  //   </div>
+  // );
 };
 
 export default SplitForm;

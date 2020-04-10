@@ -332,7 +332,7 @@ export default function SimpleExpansionPanel() {
               </Grid>
             </CardContent>
           </Card>
-          <Card radioGroup={true}>
+          <Card raised={true}>
             <CardHeader title="Payment Information" />
             <CardContent>
               <Elements stripe={stripePromise} className={classes.checkout}>

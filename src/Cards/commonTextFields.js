@@ -2,8 +2,8 @@ import React from "react";
 import {
   CardNumberElement,
   CardExpiryElement,
-  CardCVCElement
-} from "react-stripe-elements";
+  CardCvcElement
+} from "@stripe/react-stripe-js";
 import TextField from "@material-ui/core/TextField";
 import StripeInput from "./StripeInput";
 
@@ -13,6 +13,7 @@ function StripeTextField(props) {
   return (
     <TextField
       fullWidth
+      variant="outlined"
       InputLabelProps={{
         ...InputLabelProps,
         shrink: true
@@ -53,7 +54,7 @@ export function StripeTextFieldCVC(props) {
   return (
     <StripeTextField
       label="CVC Code"
-      stripeElement={CardCVCElement}
+      stripeElement={CardCvcElement}
       {...props}
     />
   );
