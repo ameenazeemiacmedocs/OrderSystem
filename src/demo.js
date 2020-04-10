@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { loadStripe } from "@stripe/stripe-js";
-
+import { flexbox } from "@material-ui/system";
 import {
   CardElement,
   Elements,
@@ -19,7 +19,10 @@ import {
   InputAdornment,
   Paper,
   AppBar,
-  Toolbar
+  Toolbar,
+  Card,
+  CardHeader,
+  CardContent
 } from "@material-ui/core";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -35,8 +38,8 @@ import { foodMenus } from "./data";
 // import { FoodArea } from "./food";
 import { FoodArea } from "./FoodMenu";
 import { GuestOrder } from "./guestOrderNew";
-
-import CardForm from "./Cards/CardForm";
+//import CreditCardDetail from "./Cards/CreditCardDetail";
+//const InjectedCreditCard = injectStripe(CreditCardDetail, { withRef: true });
 import SplitForm from "./Cards/SplitForm";
 
 import logo from "./images/logo.jpg";
@@ -238,65 +241,107 @@ export default function SimpleExpansionPanel() {
             isGuestOpen={isGuestOpen(g.guestId)}
           />
         ))}
+        <div>
+          <Box display="flex" flexDirection="row" justifyContent="flex-end">
+            <Button variant="contained" color="primary" onClick={addGuest}>
+              Add Another Guest
+            </Button>
+          </Box>
+          <Card raised={true}>
+            <CardContent>
+              <Grid container spacing={2} justify="flex-end">
+                <Grid item xs="4">
+                  <TextField
+                    label="Sub Total"
+                    variant="outlined"
+                    //variant="outlined"
+                    size="small"
+                    value={Number(order.subTotal).toFixed(2)}
+                    disabled
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      )
+                    }}
+                  />
+                </Grid>
+                <Grid item xs="4">
+                  <TextField
+                    label="Tax @ 5.86%"
+                    //variant="outlined"
+                    size="small"
+                    variant="outlined"
+                    value={Number(order.tax).toFixed(2)}
+                    disabled
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      )
+                    }}
+                  />
+                </Grid>
 
-        <Box display="flex" flexDirection="row" justifyContent="flex-start">
-          <Button variant="contained" color="primary" onClick={addGuest}>
-            Add Another Guest
-          </Button>
-        </Box>
-        <Box display="flex" flexDirection="row" justifyContent="flex-end" m={1}>
-          <TextField
-            label="Sub Total"
-            //variant="outlined"
-            size="small"
-            value={Number(order.subTotal).toFixed(2)}
-            disabled
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">$</InputAdornment>
-              )
-            }}
-          />
-        </Box>
-        <Box display="flex" flexDirection="row" justifyContent="flex-end" m={1}>
-          <TextField
-            label="Tax @ 5.86%"
-            //variant="outlined"
-            size="small"
-            value={Number(order.tax).toFixed(2)}
-            disabled
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">$</InputAdornment>
-              )
-            }}
-          />
-        </Box>
-        <Box display="flex" flexDirection="row" justifyContent="flex-end" m={1}>
-          <TextField
-            label="Total"
-            //variant=""
-            size="small"
-            value={Number(order.total).toFixed(2)}
-            disabled
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">$</InputAdornment>
-              )
-            }}
-          />
-        </Box>
-        <Paper
-          elevation={3}
-          dispaly="flex"
-          flexDirection="column"
-          justifyContent="flex-end"
-        >
-          <Elements stripe={stripePromise} className={classes.checkout}>
-            <SplitForm totalAmount={order.total} />
-            {/* <ElementDemos demos={demos} /> */}
-          </Elements>
-        </Paper>
+                <Grid item xs="4">
+                  <TextField
+                    label="Total"
+                    variant="outlined"
+                    //variant=""
+                    size="small"
+                    value={Number(order.total).toFixed(2)}
+                    disabled
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      )
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+
+          <Card raised={true}>
+            <CardHeader title="Billing Address" />
+            <CardContent>
+              <Grid container spacing={1} justify="flex-start">
+                <Grid item xs="8">
+                  <TextField label="Name" fullWidth variant="outlined" />
+                </Grid>
+                <Grid item xs="4">
+                  <TextField label="Mobile" fullWidth variant="outlined" />
+                </Grid>
+                <Grid item xs="12">
+                  <TextField
+                    label="Address"
+                    fullWidth
+                    variant="outlined"
+                    multiline="true"
+                    row="4"
+                  />
+                </Grid>
+
+                <Grid item xs="4">
+                  <TextField label="City" fullWidth variant="outlined" />
+                </Grid>
+                <Grid item xs="4">
+                  <TextField label="State" fullWidth variant="outlined" />
+                </Grid>
+                <Grid item xs="4">
+                  <TextField label="Zip" fullWidth variant="outlined" />
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+          <Card radioGroup={true}>
+            <CardHeader title="Payment Information" />
+            <CardContent>
+              <Elements stripe={stripePromise} className={classes.checkout}>
+                <SplitForm totalAmount={order.total} />
+                {/* <ElementDemos demos={demos} /> */}
+              </Elements>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

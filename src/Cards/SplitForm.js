@@ -132,36 +132,28 @@ const SplitForm = props => {
   return (
     <div className={classes.root}>
       <form className={classes.root} onSubmit={handleSubmit} noValidate>
-        <label>
-          Card number
-          {/* <TextField
-            label="Card Number"
-            //variant="outlined"
-            size="small"
-           
-            disabled
-            InputProps={{
-              component: {CardNumberElement}
-               
-            }}
-          /> */}
-          {/* <CardNumberElement /> */}
-          <CardNumberElement
-            options={options}
-            onReady={() => {
-              console.log("CardNumberElement [ready]");
-            }}
-            onChange={event => {
-              console.log("CardNumberElement [change]", event);
-            }}
-            onBlur={() => {
-              console.log("CardNumberElement [blur]");
-            }}
-            onFocus={() => {
-              console.log("CardNumberElement [focus]");
-            }}
-          />
-        </label>
+        <Grid container spacing={2}>
+          <Grid item xs={12} />
+          <label>
+            Card number
+            <CardNumberElement
+              options={options}
+              onReady={() => {
+                console.log("CardNumberElement [ready]");
+              }}
+              onChange={event => {
+                console.log("CardNumberElement [change]", event);
+              }}
+              onBlur={() => {
+                console.log("CardNumberElement [blur]");
+              }}
+              onFocus={() => {
+                console.log("CardNumberElement [focus]");
+              }}
+            />
+          </label>
+        </Grid>
+
         <label>
           Expiration date
           <CardExpiryElement
