@@ -114,7 +114,7 @@ export default function SimpleExpansionPanel() {
   };
 
   const isGuestOpen = guestId => {
-    isOpen = false;
+    let isOpen = false;
     guestOpen.forEach(p => {
       if (p.guestId === guestId) {
         isOpen = p.isOpen;
