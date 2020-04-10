@@ -140,14 +140,14 @@ export const GuestOrder = props => {
             <Chip
               color="primary"
               variant="outlined"
-              avatar={<Avatar>Qty:</Avatar>}
+              //avatar={<Avatar></Avatar>}
               label={props.totalItems}
             />
             <Chip
               color="primary"
               variant="outlined"
-              avatar={<Avatar>$</Avatar>}
-              label={props.totalAmount}
+              //avatar={<Avatar>$</Avatar>}
+              label={"$" + Number(props.totalAmount).toFixed(2)}
             />
             {props.isGuestOpen ? <ExpandLess /> : <ExpandMore />}
           </ListItem>

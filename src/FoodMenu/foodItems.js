@@ -49,6 +49,12 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("xs")]: {
       fontSize: "9pt"
     }
+  },
+  expandPanelCard: {
+    marginLeft: theme.spacing(3),
+    width: "100%",
+    display: "flex",
+    alignItems: "center"
   }
 }));
 
@@ -206,14 +212,15 @@ const ExtraItemsExpandable = props => {
         onClick={handleExpandClick}
         // style={{ paddingBottom: "0px" }}
       >
-        <Card
-          variant="outlined"
-          style={{ width: "100%", display: "flex", alignItems: "center" }}
-        >
+        <Card variant="outlined" className={classes.expandPanelCard}>
           <div className={classes.quantityItemPanelCard}>
-            <StyledBadge color="primary" badgeContent={props.index} anchorOrigin={{ vertical: 'top', horizontal: 'left',}}>
+            <StyledBadge
+              color="primary"
+              badgeContent={props.index}
+              anchorOrigin={{ vertical: "top", horizontal: "left" }}
+            >
               <Typography className={classes.extrasHeaderText}>
-                {props.menuItem.fullName} (Choices) 
+                {props.menuItem.fullName} (Choices)
               </Typography>
             </StyledBadge>
           </div>

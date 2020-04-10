@@ -301,7 +301,7 @@ export default function SimpleExpansionPanel() {
           </Card>
 
           <Card raised={true}>
-            <CardHeader title="Billing Address" />
+            <CardHeader title="Delivery Address" />
             <CardContent>
               <Grid container spacing={1} justify="flex-start">
                 <Grid item xs="8">

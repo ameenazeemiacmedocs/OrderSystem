@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     width: "100%"
   },
   listChoices: {
-    paddingLeft: theme.spacing(4)
+    paddingLeft: theme.spacing(9)
   },
   extrasSubHeader: {
     textAlign: "left",
@@ -32,6 +32,10 @@ const useStyles = makeStyles(theme => ({
       ", 30%, " +
       colors.indigo[100] +
       " 90%)"
+  },
+  subHeaderCard: {
+    marginLeft: theme.spacing(7),
+    marginRight: theme.spacing(2)
   }
 }));
 
@@ -102,7 +106,7 @@ export const MenuChoices = props => {
         dense={true}
         disablePadding={true}
         subheader={
-          <Card variant="outlined">
+          <Card variant="outlined" className={classes.subHeaderCard}>
             {/* <ListSubheader component="div" id="nested-list-subheader"> */}
             <Typography variant="body1" className={classes.extrasSubHeader}>
               {props.choice.fullName}

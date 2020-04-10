@@ -66,7 +66,7 @@ export const FoodArea = props => {
             color="primary"
             size="small"
             variant="outlined"
-            avatar={<Avatar> Qty:</Avatar>}
+            //  avatar={<Avatar> Qty:</Avatar>}
             label={areaQty}
           />
         )}
