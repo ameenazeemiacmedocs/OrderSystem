@@ -17,7 +17,9 @@ import {
   Box,
   TextField,
   InputAdornment,
-  Paper
+  Paper,
+  AppBar,
+  Toolbar
 } from "@material-ui/core";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -32,14 +34,19 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { foodMenus } from "./data";
 // import { FoodArea } from "./food";
 import { FoodArea } from "./FoodMenu";
-import { GuestOrder } from "./guestOrder";
+import { GuestOrder } from "./guestOrderNew";
 
 import CardForm from "./Cards/CardForm";
 import SplitForm from "./Cards/SplitForm";
+
+import logo from "./images/logo.jpg";
 const useStyles = makeStyles(theme => ({
   root: {
-    width: "100%",
-    marginBottom: 5
+    width: "100%"
+    // marginBottom: 5
+  },
+  title: {
+    flexGrow: 1
   },
 
   heading: {
@@ -83,6 +90,37 @@ export default function SimpleExpansionPanel() {
       display: 1
     }
   ]);
+
+  const [guestOpen, setGuestOpen] = React.useState([
+    { guestId: "1", isOpen: true }
+  ]);
+
+  const onGuestHandleClick = guestId => {
+    console.log("Handler Click " + guestId);
+    let newArr = [...guestOpen];
+    newArr.forEach(p => {
+      if (p.guestId === guestId) {
+        console.log("Opening Guest");
+        p.isOpen = !p.isOpen;
+      } else {
+        p.isOpen = false;
+      }
+    });
+
+    setGuestOpen(newArr);
+  };
+
+  const isGuestOpen = guestId => {
+    isOpen = false;
+    guestOpen.forEach(p => {
+      if (p.guestId === guestId) {
+        isOpen = p.isOpen;
+        return isOpen;
+      }
+    });
+
+    return isOpen;
+  };
   const [order, setOrder] = useState({
     orderId: "1",
     subTotal: 0,
@@ -167,10 +205,25 @@ export default function SimpleExpansionPanel() {
       dispaly: lastDispaly
     };
     setGuests(oldGues => [...oldGues, guest]);
+
+    setGuestOpen(oldGuest => [
+      ...oldGuest,
+      { guestId: lastDispaly, isOpen: false }
+    ]);
   };
 
   return (
     <div className={classes.root}>
+      <AppBar position="static">
+        <Toolbar variant="regular">
+          <Typography variant="h6" className={classes.title} align="center">
+            BLUE BOHEME
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <br />
+      <Divider />
+
       <div className={classes.root}>
         {guests.map(g => (
           <GuestOrder
@@ -181,6 +234,8 @@ export default function SimpleExpansionPanel() {
             totalAmount={g.totalAmount}
             orderDetails={orderDetails}
             onChangeQty={onChangeQty}
+            onGuestHandleClick={onGuestHandleClick}
+            isGuestOpen={isGuestOpen(g.guestId)}
           />
         ))}
 

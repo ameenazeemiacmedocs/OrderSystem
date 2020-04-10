@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
     fontWeight: theme.typography.fontWeightRegular
   },
   nested: {
-    paddingLeft: theme.spacing(2),
+    paddingLeft: theme.spacing(10),
     [theme.breakpoints.down("xs")]: {
       padding: "2px"
     }
@@ -79,8 +79,13 @@ export const FoodArea = props => {
   ));
 
   return (
-    <div className={classes.root}>
-      <ListItem key={props.area.id} button onClick={handleClick}>
+    <div>
+      <ListItem
+        key={props.area.id}
+        //button
+        onClick={handleClick}
+        className={classes.nested}
+      >
         <ListItemText primary={props.area.name} />
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>

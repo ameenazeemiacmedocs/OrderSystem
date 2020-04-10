@@ -22,10 +22,10 @@ const useStyles = makeStyles(theme => ({
     width: "100%"
   },
   nested: {
-    paddingLeft: theme.spacing(2),
-    [theme.breakpoints.down("xs")]: {
-      padding: "2px"
-    }
+    paddingLeft: theme.spacing(5)
+    //[theme.breakpoints.down("xs")]: {
+    //  padding: "10px"
+    //}
   },
   foodItemDescription: {
     display: "flex",
