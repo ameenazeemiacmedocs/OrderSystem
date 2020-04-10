@@ -336,7 +336,9 @@ export default function SimpleExpansionPanel() {
             <CardHeader title="Payment Information" />
             <CardContent>
               <Elements stripe={stripePromise} className={classes.checkout}>
-                <SplitForm totalAmount={order.total} />
+                <Grid container spacing={1} justify="flex-start">
+                  <SplitForm totalAmount={order.total} />
+                </Grid>
                 {/* <ElementDemos demos={demos} /> */}
               </Elements>
             </CardContent>

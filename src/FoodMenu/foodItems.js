@@ -164,10 +164,10 @@ export const FoodItems = props => {
 const StyledBadge = withStyles(theme => ({
   badge: {
     top: 11,
-    right: -15,
+    left: -15,
     [theme.breakpoints.down("xs")]: {
       top: 8,
-      right: -15
+      left: -15
     },
     // border: `2px solid red`,
     padding: "0 4px"
@@ -211,9 +211,9 @@ const ExtraItemsExpandable = props => {
           style={{ width: "100%", display: "flex", alignItems: "center" }}
         >
           <div className={classes.quantityItemPanelCard}>
-            <StyledBadge color="primary" badgeContent={props.index}>
+            <StyledBadge color="primary" badgeContent={props.index} anchorOrigin={{ vertical: 'top', horizontal: 'left',}}>
               <Typography className={classes.extrasHeaderText}>
-                {props.menuItem.fullName} (Extra Choices) -
+                {props.menuItem.fullName} (Choices) 
               </Typography>
             </StyledBadge>
           </div>

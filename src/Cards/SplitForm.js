@@ -134,47 +134,46 @@ const SplitForm = props => {
     }
   };
   return (
-    <div className={classes.root}>
-      <form className={classes.root} onSubmit={handleSubmit} noValidate>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <StripeTextFieldNumber
-            // error={Boolean(cardNumberError)}
-            // labelErrorMessage={cardNumberError}
-            // onChange={this.onElementChange(
-            //   "creditCardNumberComplete",
-            //   "cardNumberError"
-            // )}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <StripeTextFieldExpiry
-            // error={Boolean(cardNumberError)}
-            // labelErrorMessage={cardNumberError}
-            // onChange={this.onElementChange(
-            //   "creditCardNumberComplete",
-            //   "cardNumberError"
-            // )}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <StripeTextFieldCVC />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              size="large"
-              disabled={!stripe || props.totalAmount <= 0 || isFormSubmit}
-            >
-              Pay ${props.totalAmount}
-            </Button>
-          </Grid>
-        </Grid>
-      </form>
-    </div>
+    // <div className={classes.root}>
+    // <form className={classes.root} onSubmit={handleSubmit} noValidate>
+    <Grid container spacing={1} justify="flex-start">
+      <Grid item xs={12}>
+        <StripeTextFieldNumber
+        // error={Boolean(cardNumberError)}
+        // labelErrorMessage={cardNumberError}
+        // onChange={this.onElementChange(
+        //   "creditCardNumberComplete",
+        //   "cardNumberError"
+        // )}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <StripeTextFieldExpiry
+        // error={Boolean(cardNumberError)}
+        // labelErrorMessage={cardNumberError}
+        // onChange={this.onElementChange(
+        //   "creditCardNumberComplete",
+        //   "cardNumberError"
+        // )}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <StripeTextFieldCVC />
+      </Grid>
+      <Grid item xs={12}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          size="large"
+          disabled={!stripe || props.totalAmount <= 0 || isFormSubmit}
+        >
+          Pay ${props.totalAmount}
+        </Button>
+      </Grid>
+    </Grid>
+    //  </form>
+    //</div>
   );
   // return (
   //   <div className={classes.root}>
