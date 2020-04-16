@@ -24,12 +24,12 @@ import {
   useElements
 } from "@stripe/react-stripe-js";
 
-const stripePromise = loadStripe("pk_test_75b75lAeCG8hV3b7mMzaLbiS00Wid0wpJD");
+
 export const OrderPayment = props => {
 
   const { order } = props;
 
-
+  const stripePromise = loadStripe(props.myKey);
   return (<div>
     {order !== null && order.netTotal > 0 &&
       <Card raised={true}>
@@ -37,7 +37,7 @@ export const OrderPayment = props => {
         <CardContent>
           <Elements stripe={stripePromise} >
             <Grid container spacing={1} justify="flex-start">
-              <SplitForm totalAmount={order != null && order.netTotal} />
+              <SplitForm totalAmount={order != null && order.netTotal} onPayment={props.onPayment} />
             </Grid>
             {/* <ElementDemos demos={demos} /> */}
           </Elements>

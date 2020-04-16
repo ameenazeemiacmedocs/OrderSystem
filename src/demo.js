@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-
+import {
+  useStripe,
+  useElements,
+  CardNumberElement,
+  CardCvcElement,
+  CardExpiryElement
+} from "@stripe/react-stripe-js";
 import { flexbox } from "@material-ui/system";
 import { DropdownSelector } from "./common/DropdownSelector";
 import { makeStyles } from "@material-ui/core/styles";
@@ -68,6 +74,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function SimpleExpansionPanel() {
+  // const stripe = useStripe();
+  //const elements = useElements();
   const classes = useStyles();
   const apiURL = 'https://raffleapi.azurewebsites.net/api/';
   const [client, setClient] = useState('');
@@ -150,6 +158,7 @@ export default function SimpleExpansionPanel() {
     ]
   });
 
+  const [myInfo, setMyInfo] = useState(null);
   const [deliveryAddress, setDeliveryAddress] = useState({
     "id": "00000000-0000-0000-0000-000000000000",
     "clientCode": client,
@@ -163,6 +172,7 @@ export default function SimpleExpansionPanel() {
     "order": null
   });
 
+  const [clientSecret, setClientSecret] = useState("");
   const [defOrder, setDefOrder] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   function getParameterByName(name, url) {
@@ -209,28 +219,61 @@ export default function SimpleExpansionPanel() {
       //   });
 
       setIsLoading(true);
-      axios.get(`${apiURL}orders/myProducts`, {
-        headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
-      }).then(result => {
-        setFoodMenus(result.data);
+
+      console.log("main demo");
+      axios.all([
+        axios.get(`${apiURL}orders/myProducts`, {
+          headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
+        }),
+        axios.get(`${apiURL}orders/myInfo`, {
+          headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
+        })
+      ]).then(axios.spread((...responses) => {
+
+        setFoodMenus(responses[0].data);
+        // console.log(responses[1]);
+        setMyInfo(responses[1].data);
         setIsLoading(false);
-      })
-        .catch(error => {
-          setIsLoading(false);
-          console.error(error);
-        });
+      })).catch(error => { setIsLoading(false); });
+      // axios.get(`${apiURL}orders/myProducts`, {
+      //   headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
+      // }).then(result => {
+      //   setFoodMenus(result.data);
+      //   setIsLoading(false);
+      // })
+      //   .catch(error => {
+      //     setIsLoading(false);
+      //     console.error(error);
+      //   });
     }
 
   }, [client])
 
+  // getMyProducts = () => {
+
+  //   return axios.get(`${apiURL}orders/myProducts`, {
+  //     headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
+  //   });
+  // };
+  // getMyInfo = () => {
+  //   return axios.get(`${apiURL}orders/myInfo`, {
+  //     headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
+  //   });
+
+  // };
   //effect on changes of Order Detail
   useEffect(() => {
 
     console.log('Order is ' + order);
     //console.log(props.location.query);
     updateGuestsTotal();
+    updateOrder();
   }, [orderDetails]);
 
+  useEffect(() => {
+
+    updateOrder();
+  }, [deliveryAddress])
 
   //const GuestContext = React.createContext(orderDetails);
   const updateGuestsTotal = () => {
@@ -346,6 +389,81 @@ export default function SimpleExpansionPanel() {
 
   };
 
+  const updateOrder = () => {
+    var newOrder = { ...order };
+
+    newOrder.orderDetails = [];
+    orderDetails.forEach((od) => { newOrder.orderDetails.push(od); });
+    newOrder.orderDeliverAddress = deliveryAddress;
+    setOrder(newOrder);
+
+
+  };
+
+  // const callStripe = async (clientSecret, payment_method) => {
+
+
+  //   await stripe.confirmCardPayment(clientSecret, {
+  //     payment_method: payment_method
+  //   }).then((result) => {
+  //     return result;
+  //     // if (result.error) {
+  //     //   alert(result.error.message);
+  //     //   console.log(result.error.message);
+  //     // } else {
+  //     //   if (result.paymentIntent.status === "succeeded") {
+  //     //     alert("show Success");
+
+  //     //     console.log(result.paymentIntent);
+  //     //   }
+  //     // }
+  //   });
+
+  // };
+
+  const getClientOrderSecret = async orderId => {
+    const checkout = {
+      MobileNumber: deliveryAddress.mobileNumber,
+      Amount: order.netTotal,
+      OrderNumber: orderId
+
+    };
+    var clientSecretReq = await axios.post(
+      `https://raffleapi.azurewebsites.net/api/foodmenu/checkout`,
+      checkout,
+      {
+        headers: {
+          "content-type": "application/json"
+        }
+      }
+    ).then((response) => {
+      setClientSecret(response);
+      return response;
+    }).catch((error) => { alert("Error on Processing order.") });
+
+    // if (clientSecretReq.status == 200) {
+
+    // }
+    // else {
+
+    // }
+
+
+  };
+  const onPayment = async payment_method => {
+    debugger;
+    setIsLoading(true);
+    await axios.post(`${apiURL}orders`, order, {
+      headers: { "content-type": "application/json", 'CLIENT_CODE': client }
+    }).then((response) => {
+      setOrder(response.data);
+      let secret = getClientOrderSecret(response.data.id);
+      payment_method.billing_details = { name: deliveryAddress.name };
+      //  let stripeResult = callStripe(secret, payment_method);
+
+    }).catch((error) => { alert("Some Error Occured to process order.") });
+  };
+
   const onChangeGuestTitle = (guestId, guestName) => {
     var guestArr = [...guests];
 
@@ -408,7 +526,7 @@ export default function SimpleExpansionPanel() {
       <AppBar position="static">
         <Toolbar variant="regular">
           <Typography variant="h6" className={classes.title} align="center">
-            BLUE BOHEME
+            {myInfo !== null && myInfo.clientName}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -466,7 +584,7 @@ export default function SimpleExpansionPanel() {
               </Select> */}
             </Grid>
             <Grid item xs={12}>
-              <OrderPayment order={order} />
+              <OrderPayment order={order} myKey={myInfo === null ? "" : myInfo.stripeTestKey} onPayment={onPayment} />
             </Grid>
           </Grid>
 

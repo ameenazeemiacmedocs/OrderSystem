@@ -77,6 +77,7 @@ const SplitForm = props => {
   const [isFormSubmit, setIsFormSubmit] = React.useState(false);
 
   const handleSubmit = async event => {
+    debugger;
     event.preventDefault();
 
     if (!stripe || !elements) {
@@ -84,54 +85,60 @@ const SplitForm = props => {
       // form submission until Stripe.js has loaded.
       return;
     }
-    setIsFormSubmit(true);
-    try {
-      const checkout = {
-        MobileNumber: "0344444444",
-        Amount: props.totalAmount
-      };
-
-      console.log("before call");
-      var checkoutRequest = await axios.post(
-        `https://raffleapi.azurewebsites.net/api/foodmenu/checkout`,
-        checkout,
-        {
-          headers: {
-            "content-type": "application/json"
-          }
-        }
-      );
-      // .then(p => {
-      //   console.log("sucess " + p.data);
-      // })
-      // .catch(error => {
-      //   console.log("error" + error);
-      // });
-
-      if (checkoutRequest.status === 200) {
-        const result = await stripe.confirmCardPayment(checkoutRequest.data, {
-          payment_method: {
-            card: elements.getElement(CardNumberElement),
-            billing_details: { name: checkout.MobileNumber }
-          }
-        });
-
-        if (result.error) {
-          alert(result.error.message);
-          console.log(result.error.message);
-        } else {
-          if (result.paymentIntent.status === "succeeded") {
-            alert("show Success");
-
-            console.log(result.paymentIntent);
-          }
-        }
-      }
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setIsFormSubmit(false);
+    // setIsFormSubmit(true);
+    const paymethod = {
+      card: elements.getElement(CardNumberElement),
+      billing_details: { name: "checkout.MobileNumber" }
     }
+    props.onPayment(paymethod);
+
+    // try {
+    //   const checkout = {
+    //     MobileNumber: "0344444444",////
+    //     Amount: props.totalAmount
+    //   };
+
+    //   console.log("before call");
+    //   var checkoutRequest = await axios.post(
+    //     `https://raffleapi.azurewebsites.net/api/foodmenu/checkout`,
+    //     checkout,
+    //     {
+    //       headers: {
+    //         "content-type": "application/json"
+    //       }
+    //     }
+    //   );
+    //   // .then(p => {
+    //   //   console.log("sucess " + p.data);
+    //   // })
+    //   // .catch(error => {
+    //   //   console.log("error" + error);
+    //   // });
+
+    //   if (checkoutRequest.status === 200) {
+    //     const result = await stripe.confirmCardPayment(checkoutRequest.data, {
+    //       payment_method: {
+    //         card: elements.getElement(CardNumberElement),
+    //         billing_details: { name: checkout.MobileNumber }
+    //       }
+    //     });
+
+    //     if (result.error) {
+    //       alert(result.error.message);
+    //       console.log(result.error.message);
+    //     } else {
+    //       if (result.paymentIntent.status === "succeeded") {
+    //         alert("show Success");
+
+    //         console.log(result.paymentIntent);
+    //       }
+    //     }
+    //   }
+    // } catch (err) {
+    //   alert(err.message);
+    // } finally {
+    //   setIsFormSubmit(false);
+    // }
   };
   return (
     // <div className={classes.root}>
