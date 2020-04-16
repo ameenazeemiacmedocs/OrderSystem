@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-import { loadStripe } from "@stripe/stripe-js";
+
 import { flexbox } from "@material-ui/system";
-import {
-  CardElement,
-  Elements,
-  useStripe,
-  useElements
-} from "@stripe/react-stripe-js";
+import { DropdownSelector } from "./common/DropdownSelector";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import {
@@ -22,7 +17,10 @@ import {
   Toolbar,
   Card,
   CardHeader,
-  CardContent
+  CardContent,
+  InputLabel,
+  Select,
+  MenuItem
 } from "@material-ui/core";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -37,12 +35,16 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { foodMenus } from "./data";
 // import { FoodArea } from "./food";
 import { FoodArea } from "./FoodMenu";
-import { GuestOrder } from "./guestOrderNew";
+import LoadingOverlay from "./common/LoadingOverlay";
+
 //import CreditCardDetail from "./Cards/CreditCardDetail";
 //const InjectedCreditCard = injectStripe(CreditCardDetail, { withRef: true });
-import SplitForm from "./Cards/SplitForm";
 
+import axios from "axios";
 import logo from "./images/logo.jpg";
+
+
+import { OrderAddress, OrderPayment, OrderTotals, GuestOrder } from "./order";
 const useStyles = makeStyles(theme => ({
   root: {
     width: "100%"
@@ -64,26 +66,16 @@ const useStyles = makeStyles(theme => ({
     }
   }
 }));
-const stripePromise = loadStripe("pk_test_75b75lAeCG8hV3b7mMzaLbiS00Wid0wpJD");
+
 export default function SimpleExpansionPanel() {
   const classes = useStyles();
+  const apiURL = 'https://raffleapi.azurewebsites.net/api/';
+  const [client, setClient] = useState('');
+  const [source, setSource] = useState('url');
   const [orderDetails, setOrderDetails] = useState([
-    // {
-    //   Id: "",
-    //   guestId: "",
-    //   qty: 2,
-    //   menuId: "",
-    //   subTotal: 0,
-    //   price: 0,
-    //   otherCharges: [
-    //     {
-    //       menuItemDetailId: "",
-    //       extraCharge: 0
-    //     }
-    //   ]
-    // }
-  ]);
 
+  ]);
+  const [bestTime, SetBestTime] = useState([{ "id": 1, "display": "ASAP" }]);
   const [guests, setGuests] = useState([
     {
       guestId: "1",
@@ -93,11 +85,11 @@ export default function SimpleExpansionPanel() {
       display: 1
     }
   ]);
-
+  const [foodMenu, setFoodMenus] = useState(null);
   const [guestOpen, setGuestOpen] = React.useState([
     { guestId: "1", isOpen: true }
   ]);
-
+  const [deliveryType, setDeliveryType] = useState(0);
   const onGuestHandleClick = guestId => {
     console.log("Handler Click " + guestId);
     let newArr = [...guestOpen];
@@ -124,32 +116,158 @@ export default function SimpleExpansionPanel() {
 
     return isOpen;
   };
+
   const [order, setOrder] = useState({
-    orderId: "1",
-    subTotal: 0,
-    tax: 0,
-    total: 0
+    "id": "00000000-0000-0000-0000-000000000000",
+    "clientCode": client,
+    "mobileNumber": null,
+    "customerName": null,
+    "customerId": null,
+    "orderRef": null,
+    "orderSoruce": "test",
+    "paymentStatus": 0,
+    "orderStatus": 0,
+    "pickupTime": "0001-01-01T00:00:00",
+    "orderDateTime": "0001-01-01T00:00:00",
+    "orderTotal": 0.0,
+    "tax": 0.0,
+    "netTotal": 0.0,
+    "totalItems": 0.0,
+    "orderDeliverAddress": {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "clientCode": client,
+      "name": "",
+      "mobileNumber": "",
+      "address": "",
+      "state": "",
+      "city": "",
+      "zipCode": "",
+      "orderId": "00000000-0000-0000-0000-000000000000",
+      "order": null
+    },
+    "paymentInfo": null,
+    "orderDetails": [
+    ]
   });
 
+  const [deliveryAddress, setDeliveryAddress] = useState({
+    "id": "00000000-0000-0000-0000-000000000000",
+    "clientCode": client,
+    "name": "am",
+    "mobileNumber": "",
+    "address": "",
+    "state": "",
+    "city": "",
+    "zipCode": "",
+    "orderId": "00000000-0000-0000-0000-000000000000",
+    "order": null
+  });
+
+  const [defOrder, setDefOrder] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+      results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+  }
+
+  // effect on having client 
   useEffect(() => {
+    console.log("Client Effect");
+    if (client === "") {
+
+      var clientParam = getParameterByName("c");
+      if (clientParam === '' || clientParam === null) {
+        setClient("POSIGENT-DEV")
+      }
+      else {
+        setClient(clientParam);
+      }
+      var clientSource = getParameterByName("s");
+
+      if (clientSource === '' || clientSource === null) {
+        setSource("URL");
+      }
+    }
+
+    if (foodMenu == null && client !== '') {
+      // axios.defaults.headers.common["CLIENT_CODE"] = client;
+      // var formData = new FormData();
+      // formData.append("source", clientSource);
+      // axios.post(`${apiURL}orders/defaultOrder`, formData, {
+      //   headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
+      // }).then(result => {
+
+      //   setDefOrder(result.data);
+      // })
+      //   .catch(error => {
+      //     console.error(error);
+      //   });
+
+      setIsLoading(true);
+      axios.get(`${apiURL}orders/myProducts`, {
+        headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
+      }).then(result => {
+        setFoodMenus(result.data);
+        setIsLoading(false);
+      })
+        .catch(error => {
+          setIsLoading(false);
+          console.error(error);
+        });
+    }
+
+  }, [client])
+
+  //effect on changes of Order Detail
+  useEffect(() => {
+
+    console.log('Order is ' + order);
+    //console.log(props.location.query);
     updateGuestsTotal();
   }, [orderDetails]);
 
+
   //const GuestContext = React.createContext(orderDetails);
   const updateGuestsTotal = () => {
+    //debuggger;
     var helper = [];
-    var results = orderDetails.reduce(function(r, o) {
+    if (orderDetails === null || orderDetails.length === 0) {
+      let guestArr = [...guests];
+      let subTotal = 0;
+      guestArr.forEach(p => {
+        //console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
+
+
+        p.totalAmount = 0;
+        p.totalItems = 0;
+
+      });
+      setGuests(guestArr);
+      let oldOrder = order;
+      oldOrder.orderTotal = subTotal;
+      oldOrder.tax = 0;
+      oldOrder.netTotal = oldOrder.orderTotal + oldOrder.tax;
+      setOrder(oldOrder);
+
+      return;
+    };
+    var results = orderDetails.reduce(function (r, o) {
       //console.log(" guest " + o.guestId);
-      var key = o.guestId;
+      var key = o.guestSeq;
       let extraCharge = 0;
-      o.otherCharges.forEach(oc => {
-        extraCharge += oc.extraCharge;
+      o.orderChoices.forEach(oc => {
+        extraCharge += oc.extraCharges;
         //console.log("extraCharge " + oc.extraCharge);
       });
       if (!helper[key]) {
         helper[key] = Object.assign(
           {},
-          { guestId: o.guestId, amount: o.subTotal + extraCharge, qty: o.qty }
+          { guestId: o.guestSeq, amount: o.subTotal + extraCharge, qty: o.qty }
         );
         r.push(helper[key]);
       } else {
@@ -159,22 +277,29 @@ export default function SimpleExpansionPanel() {
       return r;
     }, []);
 
-    let newArr = [...guests];
+    let guestArr = [...guests];
+    //reset guests index
+    guestArr.forEach(p => {
+      p.totalAmount = 0;
+      p.totalItems = 0;
+
+    });
     let subTotal = 0;
+
     results.forEach(p => {
-      console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
+      //console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
       var guestIndex = getIndex(p.guestId, guests, "guestId");
       if (guestIndex >= 0) {
         subTotal += p.amount;
-        newArr[guestIndex].totalAmount = p.amount;
-        newArr[guestIndex].totalItems = p.qty;
+        guestArr[guestIndex].totalAmount = p.amount;
+        guestArr[guestIndex].totalItems = p.qty;
       }
     });
-    setGuests(newArr);
+    setGuests(guestArr);
     let oldOrder = order;
-    oldOrder.subTotal = subTotal;
+    oldOrder.orderTotal = subTotal;
     oldOrder.tax = 0;
-    oldOrder.total = oldOrder.subTotal + oldOrder.tax;
+    oldOrder.netTotal = oldOrder.orderTotal + oldOrder.tax;
     setOrder(oldOrder);
     // console.log(results);
   };
@@ -186,18 +311,20 @@ export default function SimpleExpansionPanel() {
     otherCharges = undefined,
     index = -1
   ) => {
-    var guestMenuIndex = getGuestMenuItemIndex(menuItem.id, guestId);
+
+    //debuggger;
+    var guestMenuIndex = getOrderDetailByGuestId(menuItem.id, guestId);
 
     if (guestMenuIndex >= 0) {
-      updateGuestOrderDetails(otherCharges, guestMenuIndex, isAdded, index);
+      updateOrderDetailByGuest(otherCharges, guestMenuIndex, isAdded, index);
     } else {
-      addGuestOrderDetails(guestId, menuItem, otherCharges, isAdded, index);
+      addOrderDetailByGuest(guestId, menuItem, otherCharges, isAdded, index);
     }
   };
 
   const addGuest = () => {
     var lastDispaly = guests[guests.length - 1].display;
-
+    //debuggger;
     lastDispaly += 1;
     console.log(lastDispaly);
     var guest = {
@@ -205,7 +332,7 @@ export default function SimpleExpansionPanel() {
       guestName: "Guest " + lastDispaly,
       totalItems: 0,
       totalAmount: 0,
-      dispaly: lastDispaly
+      display: lastDispaly
     };
     setGuests(oldGues => [...oldGues, guest]);
 
@@ -214,9 +341,70 @@ export default function SimpleExpansionPanel() {
       { guestId: lastDispaly, isOpen: false }
     ]);
   };
+  const onDeliveryTypeChange = (value) => {
+    setDeliveryType(value);
 
+  };
+
+  const onChangeGuestTitle = (guestId, guestName) => {
+    var guestArr = [...guests];
+
+    guestArr.forEach((g) => {
+      if (g.guestId === guestId) {
+        g.guestName = guestName;
+      }
+    });
+
+    setGuests(guestArr);
+  };
+  const onAddressChange = (fieldName, fieldValue) => {
+    console.log("Field " + fieldName + " value " + fieldValue);
+    //console.log({...deliveryAddress});
+    // let address=deliveryAddress;
+    // console.log("address value of name "+address.name);
+    // //setDeliveryAddress(...deliveryAddress,[fieldName],fieldValue);
+    //    // let newOrder=order;
+
+    //     if(fieldName==="name")
+    //     {
+    //       address.name=fieldValue;
+    //     }
+    //     else if(fieldName==="mobileNumber")
+    //     {
+    //       address.mobileNumber=fieldValue;
+    //     }
+    //     else if(fieldName==="address")
+    //     {
+    //       address.address=fieldValue;
+    //     }
+    //     else if(fieldName==="state")
+    //     {
+    //       address.state=fieldValue;
+    //     }
+    //     else if(fieldName==="city")
+    //     {
+    //       address.city=fieldValue;
+    //     }
+    //     else if(fieldName==="zipCode")
+    //     {
+    //       address.zipCode=fieldValue;
+    //     }
+
+
+    // let address={...deliveryAddress};
+    // address[fieldName]=fieldValue;
+
+    // setDeliveryAddress(oldDetails => [...oldDetails, address]);
+    //setDeliveryAddress(address);
+    //setAdSchedule({ ...adSchedule, [name]: val });
+    setDeliveryAddress({ ...deliveryAddress, [fieldName]: fieldValue });
+    // setOrder(newOrder);
+    //setOrder({ ...order,orderDeliverAddress: deliverAddress });
+
+  };
   return (
     <div className={classes.root}>
+      <LoadingOverlay open={isLoading} title="loading..." />
       <AppBar position="static">
         <Toolbar variant="regular">
           <Typography variant="h6" className={classes.title} align="center">
@@ -239,116 +427,55 @@ export default function SimpleExpansionPanel() {
             onChangeQty={onChangeQty}
             onGuestHandleClick={onGuestHandleClick}
             isGuestOpen={isGuestOpen(g.guestId)}
+            order={order}
+            foodMenus={foodMenu}
+            onChangeGuestTitle={onChangeGuestTitle}
           />
         ))}
+
         <div>
-          <Box display="flex" flexDirection="row" justifyContent="flex-end">
-            <Button variant="contained" color="primary" onClick={addGuest}>
-              Add Another Guest
+
+
+          <Grid container spacing={2} justify="flex-end" >
+            <Grid item >
+              <Button variant="contained" color="primary" onClick={addGuest}>
+                Add Another Guest
             </Button>
-          </Box>
-          <Card raised={true}>
-            <CardContent>
-              <Grid container spacing={2} justify="flex-end">
-                <Grid item xs="4">
-                  <TextField
-                    label="Sub Total"
-                    variant="outlined"
-                    //variant="outlined"
-                    size="small"
-                    value={Number(order.subTotal).toFixed(2)}
-                    disabled
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">$</InputAdornment>
-                      )
-                    }}
-                  />
-                </Grid>
-                <Grid item xs="4">
-                  <TextField
-                    label="Tax @ 5.86%"
-                    //variant="outlined"
-                    size="small"
-                    variant="outlined"
-                    value={Number(order.tax).toFixed(2)}
-                    disabled
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">$</InputAdornment>
-                      )
-                    }}
-                  />
-                </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <OrderTotals order={order} />
+            </Grid>
+            <Grid item xs={12}>
+              <OrderAddress address={deliveryAddress} onAddressChange={onAddressChange} onDeliveryTypeChange={onDeliveryTypeChange} />
+            </Grid>
+            <Grid item xs={3}>
+              <DropdownSelector onSelected={(val) => { alert("Selected " + val); }} textFieldProps={{ fullWidth: true, variant: "outlined", label: "Best Delivery Time" }} values={bestTime} valueId="id" displayName="display" />
+              {/* <Select
+                labelId="demo-simple-select-outlined-label"
+                id="demo-simple-select-outlined"
+                //value={age}
+                //onChange={handleChange}
+                label="ASAP"
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={10}>Ten</MenuItem>
+                <MenuItem value={20}>Twenty</MenuItem>
+                <MenuItem value={30}>Thirty</MenuItem>
+              </Select> */}
+            </Grid>
+            <Grid item xs={12}>
+              <OrderPayment order={order} />
+            </Grid>
+          </Grid>
 
-                <Grid item xs="4">
-                  <TextField
-                    label="Total"
-                    variant="outlined"
-                    //variant=""
-                    size="small"
-                    value={Number(order.total).toFixed(2)}
-                    disabled
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">$</InputAdornment>
-                      )
-                    }}
-                  />
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-
-          <Card raised={true}>
-            <CardHeader title="Delivery Address" />
-            <CardContent>
-              <Grid container spacing={1} justify="flex-start">
-                <Grid item xs="8">
-                  <TextField label="Name" fullWidth variant="outlined" />
-                </Grid>
-                <Grid item xs="4">
-                  <TextField label="Mobile" fullWidth variant="outlined" />
-                </Grid>
-                <Grid item xs="12">
-                  <TextField
-                    label="Address"
-                    fullWidth
-                    variant="outlined"
-                    multiline="true"
-                    row="4"
-                  />
-                </Grid>
-
-                <Grid item xs="4">
-                  <TextField label="City" fullWidth variant="outlined" />
-                </Grid>
-                <Grid item xs="4">
-                  <TextField label="State" fullWidth variant="outlined" />
-                </Grid>
-                <Grid item xs="4">
-                  <TextField label="Zip" fullWidth variant="outlined" />
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-          <Card raised={true}>
-            <CardHeader title="Payment Information" />
-            <CardContent>
-              <Elements stripe={stripePromise} className={classes.checkout}>
-                <Grid container spacing={1} justify="flex-start">
-                  <SplitForm totalAmount={order.total} />
-                </Grid>
-                {/* <ElementDemos demos={demos} /> */}
-              </Elements>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
   );
 
-  Array.prototype.remove = function(from, to) {
+  Array.prototype.remove = function (from, to) {
     var rest = this.slice((to || from) + 1 || this.length);
     this.length = from < 0 ? this.length + from : from;
     return this.push.apply(this, rest);
@@ -373,8 +500,8 @@ export default function SimpleExpansionPanel() {
   function getChargesIndex(arr, index, menuItemDetailId) {
     for (var i = 0; i < arr.length; i++) {
       if (
-        arr[i]["menuItemDetailId"] === menuItemDetailId &&
-        arr[i]["index"] === index
+        arr[i]["productChoiceDetailId"] === menuItemDetailId &&
+        arr[i]["seq"] === index
       ) {
         return i;
       }
@@ -382,17 +509,19 @@ export default function SimpleExpansionPanel() {
     return -1; //to handle the case where the value doesn't exist
   }
 
-  function getGuestMenuItemIndex(menuId, guestId) {
+  function getOrderDetailByGuestId(menuId, guestId) {
     for (var i = 0; i < orderDetails.length; i++) {
       if (
-        orderDetails[i]["menuId"] === menuId &&
-        orderDetails[i]["guestId"] === guestId
+        orderDetails[i]["productId"] === menuId &&
+        orderDetails[i]["guestSeq"] === guestId
       ) {
         return i;
       }
     }
     return -1; //to handle the case where the value doesn't exist
   }
+
+
   function uuidv4() {
     return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
       (
@@ -401,59 +530,111 @@ export default function SimpleExpansionPanel() {
       ).toString(16)
     );
   }
-  function addGuestOrderDetails(
+  function addOrderDetailByGuest(
     guestId,
     menuItem,
     otherCharges,
     isAdded,
     otherChargesSeq
   ) {
+
+    //debuggger;
     if (!isAdded) return;
+
     var orderDetail = {
-      Id: uuidv4(),
-      guestId: guestId,
-      qty: 1,
-      menuId: menuItem.id,
-      subTotal: menuItem.basePrice,
-      price: menuItem.basePrice,
-      otherCharges: []
+      "id": "00000000-0000-0000-0000-000000000000",
+      "clientCode": client,
+      "guestName": null,
+      "guestSeq": guestId,
+      "productId": menuItem.id,
+      "product": null,
+      "rate": menuItem.basePrice,
+      "tax": 0.0,
+      "discount": 0.0,
+      "qty": 1,
+      "subTotal": menuItem.basePrice,
+      "orderId": "00000000-0000-0000-0000-000000000000",
+      "order": null,
+      "orderChoices": []
     };
+
+
+
+
+    // orderDetail = orderDetail.orderChoices.slice(1);
+    // var orderDetail = {
+    //   Id: uuidv4(),
+    //   guestId: guestId,
+    //   qty: 1,
+    //   menuId: menuItem.id,
+    //   subTotal: menuItem.basePrice,
+    //   price: menuItem.basePrice,
+    //   otherCharges: []
+    // };
     if (otherCharges !== undefined) {
       console.log("add charges");
-      orderDetail.otherCharges.push({
-        index: otherChargesSeq,
-        menuItemDetailId: otherCharges.id,
-        extraCharge: otherCharges.extraCharge
-      });
+      orderDetail.orderChoices.push(
+        {
+          "id": "00000000-0000-0000-0000-000000000000",
+          "clientCode": client,
+          "productChoiceDetailId": otherCharges.id,
+          "productChoiceDetail": null,
+          "extraCharges": otherCharges.extraCharge,
+          "seq": 0,
+          "orderDetailId": "00000000-0000-0000-0000-000000000000",
+          "orderDetail": null
+        }
+
+      );
     }
+    // setOrder(oldOrder=>[...oldOrder.orderDetails,orderDetail]);
+    // newOrder.orderDetails.push(orderDetail);
+    // setOrder(newOrder);
+
     setOrderDetails(oldDetails => [...oldDetails, orderDetail]);
+
   }
 
-  function updateGuestOrderDetails(
+  function updateOrderDetailByGuest(
     otherCharges,
-    guestMenuIndex,
+    orderDetailIndex,
     isAdded,
     otherChargesSeq
   ) {
-    let newArr = [...orderDetails];
+    let odArr = [...orderDetails];
     // for qty update
     if (otherCharges === undefined) {
       let qty = 1;
       if (!isAdded) qty = -1;
-      if (isAdded || (!isAdded && newArr[guestMenuIndex].qty > 0)) {
-        newArr[guestMenuIndex].qty += qty;
-        newArr[guestMenuIndex].subTotal =
-          newArr[guestMenuIndex].qty * newArr[guestMenuIndex].price;
+      if (isAdded || (!isAdded && odArr[orderDetailIndex].qty > 0)) {
+        odArr[orderDetailIndex].qty += qty;
+        odArr[orderDetailIndex].subTotal =
+          odArr[orderDetailIndex].qty * odArr[orderDetailIndex].rate;
       }
-      console.log(newArr);
+
+      //debuggger;
+      // remove order detail row 
+      if (odArr[orderDetailIndex].qty <= 0) {
+        //odArr[orderDetailIndex].splice(orderDetailIndex)
+        odArr.splice(orderDetailIndex);
+      }
     } // other charges
     else {
       if (isAdded)
-        newArr[guestMenuIndex].otherCharges.push({
-          index: otherChargesSeq,
-          menuItemDetailId: otherCharges.id,
-          extraCharge: otherCharges.extraCharge
-        });
+
+
+        odArr[orderDetailIndex].orderChoices.push(
+          {
+            "id": "00000000-0000-0000-0000-000000000000",
+            "clientCode": client,
+            "productChoiceDetailId": otherCharges.id,
+            "productChoiceDetail": null,
+            "extraCharges": otherCharges.extraCharge,
+            "seq": otherChargesSeq,
+            "orderDetailId": "00000000-0000-0000-0000-000000000000",
+            "orderDetail": null
+          }
+        );
       // remove qty
       else {
         // var chargesIndex = getIndex(
@@ -463,14 +644,14 @@ export default function SimpleExpansionPanel() {
         // );
 
         var chargesIndex = getChargesIndex(
-          newArr[guestMenuIndex].otherCharges,
+          odArr[orderDetailIndex].orderChoices,
           otherChargesSeq,
           otherCharges.id
         );
         if (chargesIndex >= 0)
-          newArr[guestMenuIndex].otherCharges.splice(chargesIndex, 1);
+          odArr[orderDetailIndex].orderChoices.splice(chargesIndex, 1);
       }
     } // enf of orher charges
-    setOrderDetails(newArr);
+    setOrderDetails(odArr);
   } // enf of updated guest order details
 }
