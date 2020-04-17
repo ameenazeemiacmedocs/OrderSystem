@@ -478,26 +478,45 @@ export const OrderLanding = props => {
       .then(response => {
         //setOrder(response.data);
         //setIsOrderSaved(true);
-
-        getClientOrderSecret(response.data.id)
-          .then(successSecret => {
-            payment_method.billing_details = { name: deliveryAddress.name };
-            callStripe(successSecret.data, payment_method)
-              .then(stripeSuccess => {
-                setIsLoading(false);
-                onPaymentSuccess(response.data.id, "");
-                //  debugger;
-                //console.log("Stripe intent " + stripeSuccess);
-              })
-              .catch(stripeError => {
-                console.log(stripeError);
-                alert("Error on Stripe ");
-              });
-          })
-          .catch(errorSecret => {
-            console.log(errorSecret);
-            alert("Error on Accessing Client Secrets.");
-          });
+        if (clientSecret === "") {
+          getClientOrderSecret(response.data.id)
+            .then(successSecret => {
+              payment_method.billing_details = { name: deliveryAddress.name };
+              callStripe(successSecret.data, payment_method)
+                .then(stripeSuccess => {
+                  setIsLoading(false);
+                  onPaymentSuccess(response.data.id, "");
+                  //  debugger;
+                  //console.log("Stripe intent " + stripeSuccess);
+                })
+                .catch(stripeError => {
+                  console.log(stripeError);
+                  alert("Error on Stripe " + stripeError);
+                  setOrder(response.data);
+                  setClientSecret(successSecret.data);
+                });
+            })
+            .catch(errorSecret => {
+              console.log(errorSecret);
+              alert("Error on Accessing Client Secrets.");
+            });
+        } // enf of client secret // if have client secret
+        else {
+          payment_method.billing_details = { name: deliveryAddress.name };
+          callStripe(clientSecret, payment_method)
+            .then(stripeSuccess => {
+              setIsLoading(false);
+              onPaymentSuccess(response.data.id, "");
+              //  debugger;
+              //console.log("Stripe intent " + stripeSuccess);
+            })
+            .catch(stripeError => {
+              console.log(stripeError);
+              alert("Error on Stripe " + stripeError);
+              setOrder(response.data);
+              setClientSecret(successSecret.data);
+            });
+        }
 
         //  let stripeResult = callStripe(secret, payment_method);
       })

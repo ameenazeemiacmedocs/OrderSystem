@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Typography } from "@material-ui/core";
 import LoadingOverlay from "./common/LoadingOverlay";
+import SuccessOverlay from "./common/SuccessOverlay";
 import { OrderLanding } from "./orderLanding";
+import CheckIcon from "@material-ui/icons/Check";
+import {
+  createMuiTheme,
+  withStyles,
+  makeStyles,
+  ThemeProvider
+} from "@material-ui/core/styles";
 export const LandingPage = () => {
   const apiURL = "https://raffleapi.azurewebsites.net/api/";
   const [client, setClient] = useState("");
@@ -10,7 +19,15 @@ export const LandingPage = () => {
   const [myInfo, setMyInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   //const [paymentSuccessfull,setPaymentSuccessfull]=useState(false);
-  const [payment, setPayment] = useState(null);
+  const [payment, setPayment] = useState(
+    null
+    //   {
+    //   orderId: "ABC",
+    //   waitTime: "",
+    //   sucessMessage:
+    //     "Thank you for your order! We will keep you informed of your order status through text messaging."
+    // }
+  );
   function getParameterByName(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, "\\$&");
@@ -125,11 +142,16 @@ export const LandingPage = () => {
 };
 
 export const PaymentSuccessPage = props => {
+  const [showSuccessOverlay, setShowSuccessOverlay] = useState(true);
+  useEffect(() => {
+    console.log("Payment page");
+  });
   return (
     <div>
-      <span>{props.payment.sucessMessage}</span>
-      <br />
-      <span>Your order Number is ={props.payment.orderId}</span>
+      <SuccessOverlay
+        open={showSuccessOverlay}
+        message={props.payment.sucessMessage}
+      />
     </div>
   );
 };
