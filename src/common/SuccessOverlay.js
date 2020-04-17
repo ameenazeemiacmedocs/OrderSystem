@@ -7,7 +7,7 @@ import {
 } from "@material-ui/core/styles";
 import { Typography, Button, Divider } from "@material-ui/core";
 import clsx from "clsx";
-import Background from "../../public/images/bg.png";
+import Background from "../images/bg.png";
 
 import CheckIcon from "@material-ui/icons/Check";
 
