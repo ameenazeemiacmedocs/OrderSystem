@@ -49,7 +49,6 @@ import LoadingOverlay from "./common/LoadingOverlay";
 import axios from "axios";
 import logo from "./images/logo.jpg";
 
-
 import { OrderAddress, OrderPayment, OrderTotals, GuestOrder } from "./order";
 const useStyles = makeStyles(theme => ({
   root: {
@@ -73,17 +72,18 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function SimpleExpansionPanel() {
-  // const stripe = useStripe();
-  //const elements = useElements();
+export const OrderLanding = props => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const { apiURL, client, source, foodMenu, myInfo, onPaymentSuccess } = props;
   const classes = useStyles();
-  const apiURL = 'https://raffleapi.azurewebsites.net/api/';
-  const [client, setClient] = useState('');
-  const [source, setSource] = useState('url');
-  const [orderDetails, setOrderDetails] = useState([
+  //const apiURL = "https://raffleapi.azurewebsites.net/api/";
+  //const [client, setClient] = useState("");
+  //const [sourceource, setSource] = useState("url");
 
-  ]);
-  const [bestTime, SetBestTime] = useState([{ "id": 1, "display": "ASAP" }]);
+  const [orderDetails, setOrderDetails] = useState([]);
+  const [isOrderSaved, setIsOrderSaved] = useState(false);
+  const [bestTime, SetBestTime] = useState([{ id: 1, display: "ASAP" }]);
   const [guests, setGuests] = useState([
     {
       guestId: "1",
@@ -93,7 +93,7 @@ export default function SimpleExpansionPanel() {
       display: 1
     }
   ]);
-  const [foodMenu, setFoodMenus] = useState(null);
+  // const [foodMenu, setFoodMenus] = useState(null);
   const [guestOpen, setGuestOpen] = React.useState([
     { guestId: "1", isOpen: true }
   ]);
@@ -126,50 +126,48 @@ export default function SimpleExpansionPanel() {
   };
 
   const [order, setOrder] = useState({
-    "id": "00000000-0000-0000-0000-000000000000",
-    "clientCode": client,
-    "mobileNumber": null,
-    "customerName": null,
-    "customerId": null,
-    "orderRef": null,
-    "orderSoruce": "test",
-    "paymentStatus": 0,
-    "orderStatus": 0,
-    "pickupTime": "0001-01-01T00:00:00",
-    "orderDateTime": "0001-01-01T00:00:00",
-    "orderTotal": 0.0,
-    "tax": 0.0,
-    "netTotal": 0.0,
-    "totalItems": 0.0,
-    "orderDeliverAddress": {
-      "id": "00000000-0000-0000-0000-000000000000",
-      "clientCode": client,
-      "name": "",
-      "mobileNumber": "",
-      "address": "",
-      "state": "",
-      "city": "",
-      "zipCode": "",
-      "orderId": "00000000-0000-0000-0000-000000000000",
-      "order": null
+    id: "00000000-0000-0000-0000-000000000000",
+    clientCode: client,
+    mobileNumber: null,
+    customerName: null,
+    customerId: null,
+    orderRef: null,
+    orderSoruce: "test",
+    paymentStatus: 0,
+    orderStatus: 0,
+    pickupTime: "0001-01-01T00:00:00",
+    orderDateTime: "0001-01-01T00:00:00",
+    orderTotal: 0.0,
+    tax: 0.0,
+    netTotal: 0.0,
+    totalItems: 0.0,
+    orderDeliverAddress: {
+      id: "00000000-0000-0000-0000-000000000000",
+      clientCode: client,
+      name: "",
+      mobileNumber: "",
+      address: "",
+      state: "",
+      city: "",
+      zipCode: "",
+      orderId: "00000000-0000-0000-0000-000000000000",
+      order: null
     },
-    "paymentInfo": null,
-    "orderDetails": [
-    ]
+    paymentInfo: null,
+    orderDetails: []
   });
 
-  const [myInfo, setMyInfo] = useState(null);
   const [deliveryAddress, setDeliveryAddress] = useState({
-    "id": "00000000-0000-0000-0000-000000000000",
-    "clientCode": client,
-    "name": "am",
-    "mobileNumber": "",
-    "address": "",
-    "state": "",
-    "city": "",
-    "zipCode": "",
-    "orderId": "00000000-0000-0000-0000-000000000000",
-    "order": null
+    id: "00000000-0000-0000-0000-000000000000",
+    clientCode: client,
+    name: "ameen",
+    mobileNumber: "03444441166",
+    address: "66 f2 johar town",
+    state: "punjab",
+    city: "Lahore",
+    zipCode: "54301",
+    orderId: "00000000-0000-0000-0000-000000000000",
+    order: null
   });
 
   const [clientSecret, setClientSecret] = useState("");
@@ -177,77 +175,86 @@ export default function SimpleExpansionPanel() {
   const [isLoading, setIsLoading] = useState(false);
   function getParameterByName(name, url) {
     if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
       results = regex.exec(url);
     if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    if (!results[2]) return "";
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
   }
 
-  // effect on having client 
-  useEffect(() => {
-    console.log("Client Effect");
-    if (client === "") {
+  // effect on having client
+  // useEffect(() => {
+  //   console.log("Client Effect");
+  //   if (client === "") {
+  //     var clientParam = getParameterByName("c");
+  //     if (clientParam === "" || clientParam === null) {
+  //       setClient("POSIGENT-DEV");
+  //     } else {
+  //       setClient(clientParam);
+  //     }
+  //     var clientSource = getParameterByName("s");
 
-      var clientParam = getParameterByName("c");
-      if (clientParam === '' || clientParam === null) {
-        setClient("POSIGENT-DEV")
-      }
-      else {
-        setClient(clientParam);
-      }
-      var clientSource = getParameterByName("s");
+  //     if (clientSource === "" || clientSource === null) {
+  //       setSource("URL");
+  //     }
+  //   }
 
-      if (clientSource === '' || clientSource === null) {
-        setSource("URL");
-      }
-    }
+  //   if (foodMenu == null && client !== "") {
+  //     // axios.defaults.headers.common["CLIENT_CODE"] = client;
+  //     // var formData = new FormData();
+  //     // formData.append("source", clientSource);
+  //     // axios.post(`${apiURL}orders/defaultOrder`, formData, {
+  //     //   headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
+  //     // }).then(result => {
 
-    if (foodMenu == null && client !== '') {
-      // axios.defaults.headers.common["CLIENT_CODE"] = client;
-      // var formData = new FormData();
-      // formData.append("source", clientSource);
-      // axios.post(`${apiURL}orders/defaultOrder`, formData, {
-      //   headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
-      // }).then(result => {
+  //     //   setDefOrder(result.data);
+  //     // })
+  //     //   .catch(error => {
+  //     //     console.error(error);
+  //     //   });
 
-      //   setDefOrder(result.data);
-      // })
-      //   .catch(error => {
-      //     console.error(error);
-      //   });
+  //     setIsLoading(true);
 
-      setIsLoading(true);
-
-      console.log("main demo");
-      axios.all([
-        axios.get(`${apiURL}orders/myProducts`, {
-          headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
-        }),
-        axios.get(`${apiURL}orders/myInfo`, {
-          headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
-        })
-      ]).then(axios.spread((...responses) => {
-
-        setFoodMenus(responses[0].data);
-        // console.log(responses[1]);
-        setMyInfo(responses[1].data);
-        setIsLoading(false);
-      })).catch(error => { setIsLoading(false); });
-      // axios.get(`${apiURL}orders/myProducts`, {
-      //   headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
-      // }).then(result => {
-      //   setFoodMenus(result.data);
-      //   setIsLoading(false);
-      // })
-      //   .catch(error => {
-      //     setIsLoading(false);
-      //     console.error(error);
-      //   });
-    }
-
-  }, [client])
+  //     console.log("main demo");
+  //     axios
+  //       .all([
+  //         axios.get(`${apiURL}orders/myProducts`, {
+  //           headers: {
+  //             "content-type": "multipart/form-data",
+  //             CLIENT_CODE: client
+  //           }
+  //         }),
+  //         axios.get(`${apiURL}orders/myInfo`, {
+  //           headers: {
+  //             "content-type": "multipart/form-data",
+  //             CLIENT_CODE: client
+  //           }
+  //         })
+  //       ])
+  //       .then(
+  //         axios.spread((...responses) => {
+  //           setFoodMenus(responses[0].data);
+  //           // console.log(responses[1]);
+  //           setMyInfo(responses[1].data);
+  //           setIsLoading(false);
+  //         })
+  //       )
+  //       .catch(error => {
+  //         setIsLoading(false);
+  //       });
+  //     // axios.get(`${apiURL}orders/myProducts`, {
+  //     //   headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
+  //     // }).then(result => {
+  //     //   setFoodMenus(result.data);
+  //     //   setIsLoading(false);
+  //     // })
+  //     //   .catch(error => {
+  //     //     setIsLoading(false);
+  //     //     console.error(error);
+  //     //   });
+  //   }
+  // }, [client]);
 
   // getMyProducts = () => {
 
@@ -263,17 +270,15 @@ export default function SimpleExpansionPanel() {
   // };
   //effect on changes of Order Detail
   useEffect(() => {
-
-    console.log('Order is ' + order);
+    console.log("Order is " + order);
     //console.log(props.location.query);
     updateGuestsTotal();
-    updateOrder();
+    // updateOrder();
   }, [orderDetails]);
 
   useEffect(() => {
-
     updateOrder();
-  }, [deliveryAddress])
+  }, [deliveryAddress]);
 
   //const GuestContext = React.createContext(orderDetails);
   const updateGuestsTotal = () => {
@@ -285,10 +290,8 @@ export default function SimpleExpansionPanel() {
       guestArr.forEach(p => {
         //console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
 
-
         p.totalAmount = 0;
         p.totalItems = 0;
-
       });
       setGuests(guestArr);
       let oldOrder = order;
@@ -298,8 +301,8 @@ export default function SimpleExpansionPanel() {
       setOrder(oldOrder);
 
       return;
-    };
-    var results = orderDetails.reduce(function (r, o) {
+    }
+    var results = orderDetails.reduce(function(r, o) {
       //console.log(" guest " + o.guestId);
       var key = o.guestSeq;
       let extraCharge = 0;
@@ -325,7 +328,6 @@ export default function SimpleExpansionPanel() {
     guestArr.forEach(p => {
       p.totalAmount = 0;
       p.totalItems = 0;
-
     });
     let subTotal = 0;
 
@@ -343,6 +345,12 @@ export default function SimpleExpansionPanel() {
     oldOrder.orderTotal = subTotal;
     oldOrder.tax = 0;
     oldOrder.netTotal = oldOrder.orderTotal + oldOrder.tax;
+
+    oldOrder.orderDetails = [];
+    orderDetails.forEach(od => {
+      oldOrder.orderDetails.push(od);
+    });
+
     setOrder(oldOrder);
     // console.log(results);
   };
@@ -354,7 +362,6 @@ export default function SimpleExpansionPanel() {
     otherCharges = undefined,
     index = -1
   ) => {
-
     //debuggger;
     var guestMenuIndex = getOrderDetailByGuestId(menuItem.id, guestId);
 
@@ -384,62 +391,75 @@ export default function SimpleExpansionPanel() {
       { guestId: lastDispaly, isOpen: false }
     ]);
   };
-  const onDeliveryTypeChange = (value) => {
+  const onDeliveryTypeChange = value => {
     setDeliveryType(value);
-
   };
 
   const updateOrder = () => {
     var newOrder = { ...order };
 
-    newOrder.orderDetails = [];
-    orderDetails.forEach((od) => { newOrder.orderDetails.push(od); });
+    // newOrder.orderDetails = [];
+    // orderDetails.forEach(od => {
+    //   newOrder.orderDetails.push(od);
+    // });
     newOrder.orderDeliverAddress = deliveryAddress;
     setOrder(newOrder);
-
-
   };
 
-  // const callStripe = async (clientSecret, payment_method) => {
+  const callStripe = (clientSecret, payment_method) => {
+    return new Promise((resolve, reject) => {
+      stripe
+        .confirmCardPayment(clientSecret, {
+          payment_method: payment_method
+        })
+        .then(result => {
+          if (result.error) {
+            reject(result.error.message);
+          }
+          if (result.paymentIntent.status === "succeeded") {
+            resolve(result.paymentIntent);
+          }
 
+          // if (result.error) {
+          //   alert(result.error.message);
+          //   console.log(result.error.message);
+          // } else {
+          //   if (result.paymentIntent.status === "succeeded") {
+          //     alert("show Success");
 
-  //   await stripe.confirmCardPayment(clientSecret, {
-  //     payment_method: payment_method
-  //   }).then((result) => {
-  //     return result;
-  //     // if (result.error) {
-  //     //   alert(result.error.message);
-  //     //   console.log(result.error.message);
-  //     // } else {
-  //     //   if (result.paymentIntent.status === "succeeded") {
-  //     //     alert("show Success");
+          //     console.log(result.paymentIntent);
+          //   }
+          // }
+        });
+    });
+  };
 
-  //     //     console.log(result.paymentIntent);
-  //     //   }
-  //     // }
-  //   });
+  const getClientOrderSecret = orderId => {
+    return new Promise((resolve, reject) => {
+      const checkout = {
+        MobileNumber: deliveryAddress.mobileNumber,
+        Amount: order.netTotal,
+        OrderNumber: orderId
+      };
 
-  // };
+      axios
+        .post(`${apiURL}orders/checkout`, checkout, {
+          headers: {
+            "content-type": "application/json",
+            CLIENT_CODE: client
+          }
+        })
+        .then(response => {
+          // setClientSecret(response);
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+          //alert("Error on Processing order.");
+        });
+    });
 
-  const getClientOrderSecret = async orderId => {
-    const checkout = {
-      MobileNumber: deliveryAddress.mobileNumber,
-      Amount: order.netTotal,
-      OrderNumber: orderId
-
-    };
-    var clientSecretReq = await axios.post(
-      `https://raffleapi.azurewebsites.net/api/foodmenu/checkout`,
-      checkout,
-      {
-        headers: {
-          "content-type": "application/json"
-        }
-      }
-    ).then((response) => {
-      setClientSecret(response);
-      return response;
-    }).catch((error) => { alert("Error on Processing order.") });
+    //var clientSecretReq =
 
     // if (clientSecretReq.status == 200) {
 
@@ -447,27 +467,49 @@ export default function SimpleExpansionPanel() {
     // else {
 
     // }
-
-
   };
   const onPayment = async payment_method => {
     debugger;
     setIsLoading(true);
-    await axios.post(`${apiURL}orders`, order, {
-      headers: { "content-type": "application/json", 'CLIENT_CODE': client }
-    }).then((response) => {
-      setOrder(response.data);
-      let secret = getClientOrderSecret(response.data.id);
-      payment_method.billing_details = { name: deliveryAddress.name };
-      //  let stripeResult = callStripe(secret, payment_method);
+    await axios
+      .post(`${apiURL}orders`, order, {
+        headers: { "content-type": "application/json", CLIENT_CODE: client }
+      })
+      .then(response => {
+        //setOrder(response.data);
+        //setIsOrderSaved(true);
 
-    }).catch((error) => { alert("Some Error Occured to process order.") });
+        getClientOrderSecret(response.data.id)
+          .then(successSecret => {
+            payment_method.billing_details = { name: deliveryAddress.name };
+            callStripe(successSecret.data, payment_method)
+              .then(stripeSuccess => {
+                setIsLoading(false);
+                onPaymentSuccess(response.data.id, "");
+                //  debugger;
+                //console.log("Stripe intent " + stripeSuccess);
+              })
+              .catch(stripeError => {
+                console.log(stripeError);
+                alert("Error on Stripe ");
+              });
+          })
+          .catch(errorSecret => {
+            console.log(errorSecret);
+            alert("Error on Accessing Client Secrets.");
+          });
+
+        //  let stripeResult = callStripe(secret, payment_method);
+      })
+      .catch(error => {
+        alert("Some Error Occured to process order.");
+      });
   };
 
   const onChangeGuestTitle = (guestId, guestName) => {
     var guestArr = [...guests];
 
-    guestArr.forEach((g) => {
+    guestArr.forEach(g => {
       if (g.guestId === guestId) {
         g.guestName = guestName;
       }
@@ -508,7 +550,6 @@ export default function SimpleExpansionPanel() {
     //       address.zipCode=fieldValue;
     //     }
 
-
     // let address={...deliveryAddress};
     // address[fieldName]=fieldValue;
 
@@ -518,11 +559,11 @@ export default function SimpleExpansionPanel() {
     setDeliveryAddress({ ...deliveryAddress, [fieldName]: fieldValue });
     // setOrder(newOrder);
     //setOrder({ ...order,orderDeliverAddress: deliverAddress });
-
   };
   return (
     <div className={classes.root}>
-      <LoadingOverlay open={isLoading} title="loading..." />
+      <LoadingOverlay open={isLoading} title="Processing Payment.." />
+
       <AppBar position="static">
         <Toolbar variant="regular">
           <Typography variant="h6" className={classes.title} align="center">
@@ -552,22 +593,36 @@ export default function SimpleExpansionPanel() {
         ))}
 
         <div>
-
-
-          <Grid container spacing={2} justify="flex-end" >
-            <Grid item >
+          <Grid container spacing={2} justify="flex-end">
+            <Grid item>
               <Button variant="contained" color="primary" onClick={addGuest}>
                 Add Another Guest
-            </Button>
+              </Button>
             </Grid>
             <Grid item xs={12}>
               <OrderTotals order={order} />
             </Grid>
             <Grid item xs={12}>
-              <OrderAddress address={deliveryAddress} onAddressChange={onAddressChange} onDeliveryTypeChange={onDeliveryTypeChange} />
+              <OrderAddress
+                address={deliveryAddress}
+                onAddressChange={onAddressChange}
+                onDeliveryTypeChange={onDeliveryTypeChange}
+              />
             </Grid>
             <Grid item xs={3}>
-              <DropdownSelector onSelected={(val) => { alert("Selected " + val); }} textFieldProps={{ fullWidth: true, variant: "outlined", label: "Best Delivery Time" }} values={bestTime} valueId="id" displayName="display" />
+              <DropdownSelector
+                onSelected={val => {
+                  alert("Selected " + val);
+                }}
+                textFieldProps={{
+                  fullWidth: true,
+                  variant: "outlined",
+                  label: "Best Delivery Time"
+                }}
+                values={bestTime}
+                valueId="id"
+                displayName="display"
+              />
               {/* <Select
                 labelId="demo-simple-select-outlined-label"
                 id="demo-simple-select-outlined"
@@ -584,18 +639,21 @@ export default function SimpleExpansionPanel() {
               </Select> */}
             </Grid>
             <Grid item xs={12}>
-              <OrderPayment order={order} myKey={myInfo === null ? "" : myInfo.stripeTestKey} onPayment={onPayment} />
+              <OrderPayment
+                order={order}
+                myKey={myInfo === null ? "" : myInfo.stripeTestKey}
+                onPayment={onPayment}
+              />
             </Grid>
           </Grid>
-
         </div>
       </div>
     </div>
   );
 
-  Array.prototype.remove = function (from, to) {
+  Array.prototype.remove = function(from, to) {
     var rest = this.slice((to || from) + 1 || this.length);
-    this.length = from < 0 ? this.length + from : from;
+    this.length = from < 0 ? this.lengtho + from : from;
     return this.push.apply(this, rest);
   };
 
@@ -639,7 +697,6 @@ export default function SimpleExpansionPanel() {
     return -1; //to handle the case where the value doesn't exist
   }
 
-
   function uuidv4() {
     return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
       (
@@ -655,29 +712,25 @@ export default function SimpleExpansionPanel() {
     isAdded,
     otherChargesSeq
   ) {
-
     //debuggger;
     if (!isAdded) return;
 
     var orderDetail = {
-      "id": "00000000-0000-0000-0000-000000000000",
-      "clientCode": client,
-      "guestName": null,
-      "guestSeq": guestId,
-      "productId": menuItem.id,
-      "product": null,
-      "rate": menuItem.basePrice,
-      "tax": 0.0,
-      "discount": 0.0,
-      "qty": 1,
-      "subTotal": menuItem.basePrice,
-      "orderId": "00000000-0000-0000-0000-000000000000",
-      "order": null,
-      "orderChoices": []
+      id: "00000000-0000-0000-0000-000000000000",
+      clientCode: client,
+      guestName: null,
+      guestSeq: guestId,
+      productId: menuItem.id,
+      product: null,
+      rate: menuItem.basePrice,
+      tax: 0.0,
+      discount: 0.0,
+      qty: 1,
+      subTotal: menuItem.basePrice,
+      orderId: "00000000-0000-0000-0000-000000000000",
+      order: null,
+      orderChoices: []
     };
-
-
-
 
     // orderDetail = orderDetail.orderChoices.slice(1);
     // var orderDetail = {
@@ -691,26 +744,22 @@ export default function SimpleExpansionPanel() {
     // };
     if (otherCharges !== undefined) {
       console.log("add charges");
-      orderDetail.orderChoices.push(
-        {
-          "id": "00000000-0000-0000-0000-000000000000",
-          "clientCode": client,
-          "productChoiceDetailId": otherCharges.id,
-          "productChoiceDetail": null,
-          "extraCharges": otherCharges.extraCharge,
-          "seq": 0,
-          "orderDetailId": "00000000-0000-0000-0000-000000000000",
-          "orderDetail": null
-        }
-
-      );
+      orderDetail.orderChoices.push({
+        id: "00000000-0000-0000-0000-000000000000",
+        clientCode: client,
+        productChoiceDetailId: otherCharges.id,
+        productChoiceDetail: null,
+        extraCharges: otherCharges.extraCharge,
+        seq: 0,
+        orderDetailId: "00000000-0000-0000-0000-000000000000",
+        orderDetail: null
+      });
     }
     // setOrder(oldOrder=>[...oldOrder.orderDetails,orderDetail]);
     // newOrder.orderDetails.push(orderDetail);
     // setOrder(newOrder);
 
     setOrderDetails(oldDetails => [...oldDetails, orderDetail]);
-
   }
 
   function updateOrderDetailByGuest(
@@ -731,7 +780,7 @@ export default function SimpleExpansionPanel() {
       }
 
       //debuggger;
-      // remove order detail row 
+      // remove order detail row
       if (odArr[orderDetailIndex].qty <= 0) {
         //odArr[orderDetailIndex].splice(orderDetailIndex)
         odArr.splice(orderDetailIndex);
@@ -739,20 +788,16 @@ export default function SimpleExpansionPanel() {
     } // other charges
     else {
       if (isAdded)
-
-
-        odArr[orderDetailIndex].orderChoices.push(
-          {
-            "id": "00000000-0000-0000-0000-000000000000",
-            "clientCode": client,
-            "productChoiceDetailId": otherCharges.id,
-            "productChoiceDetail": null,
-            "extraCharges": otherCharges.extraCharge,
-            "seq": otherChargesSeq,
-            "orderDetailId": "00000000-0000-0000-0000-000000000000",
-            "orderDetail": null
-          }
-        );
+        odArr[orderDetailIndex].orderChoices.push({
+          id: "00000000-0000-0000-0000-000000000000",
+          clientCode: client,
+          productChoiceDetailId: otherCharges.id,
+          productChoiceDetail: null,
+          extraCharges: otherCharges.extraCharge,
+          seq: otherChargesSeq,
+          orderDetailId: "00000000-0000-0000-0000-000000000000",
+          orderDetail: null
+        });
       // remove qty
       else {
         // var chargesIndex = getIndex(
@@ -772,4 +817,4 @@ export default function SimpleExpansionPanel() {
     } // enf of orher charges
     setOrderDetails(odArr);
   } // enf of updated guest order details
-}
+};
