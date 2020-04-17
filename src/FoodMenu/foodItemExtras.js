@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import {
@@ -42,10 +42,56 @@ const useStyles = makeStyles(theme => ({
 export const MenuChoices = props => {
   const classes = useStyles();
   const [open, setOpen] = useState();
+  const [choice, setChocie] = useState(null);
 
   // var details = props.choice.menuItemDetails.map(ch => (
   //   <CheckBoxChoices itemDetail={ch} />
   // ));
+  // useEffect(() => {
+  //   selectedChoice();
+  // }, [props.orderDetails]);
+
+  // const selectedChoice = () => {
+  //   debugger;
+  //   var orderDetail = props.orderDetails.find(orderDetail => {
+  //     return (
+  //       orderDetail.productId === props.menuItem.id &&
+  //       orderDetail.guestSeq === props.guestId
+  //     );
+  //   });
+  //   if (orderDetail) {
+  //     orderDetail.orderChoices.forEach(ch => {
+  //       if (
+  //         ch.seq === props.index &&
+  //         ch.productChoiceDetailId === props.choice.id
+  //       ) {
+  //         setChocie(ch);
+  //       }
+  //     });
+  //   }
+  //   setChocie(null);
+  // };
+
+  var orderDetail = props.orderDetails.find(orderDetail => {
+    return (
+      orderDetail.productId === props.menuItem.id &&
+      orderDetail.guestSeq === props.guestId
+    );
+  });
+
+  let selectedChoices = [];
+  if (
+    orderDetail &&
+    orderDetail.orderChoices &&
+    orderDetail.orderChoices.length > 0
+  ) {
+    console.log(orderDetail);
+    orderDetail.orderChoices.forEach(choice => {
+      if (choice.seq === props.index) {
+        selectedChoices.push(choice);
+      }
+    });
+  }
 
   const handleRadioSelection = (prevChoice, newChoice) => {
     if (prevChoice !== null) {
@@ -84,6 +130,8 @@ export const MenuChoices = props => {
     <RadioChoiceGroup
       choices={props.choice.menuItemDetails}
       handleRadioSelection={handleRadioSelection}
+      selectedChoices={selectedChoices}
+      {...props}
     />
   ) : (
     props.choice.menuItemDetails.map(ch => {
@@ -92,6 +140,7 @@ export const MenuChoices = props => {
           itemDetail={ch}
           key={ch.fullName}
           onChange={handleCheckBox}
+          selectedChoices={selectedChoices}
           {...props}
         />
       );
@@ -125,7 +174,15 @@ export const MenuChoices = props => {
 
 export const CheckBoxChoices = props => {
   const classes = useStyles();
-  const mRef = useRef();
+  // const mRef = useRef();
+  // const [isChecked, setIsChecked] = useState(false);
+  let isChecked = false;
+
+  if (props.selectedChoices.length > 0) {
+    props.selectedChoices.forEach(ch => {
+      if (props.itemDetail.id === ch.productChoiceDetailId) isChecked = true;
+    });
+  }
 
   const onCheckboxChange = (e, item) => {
     // props.onChange(item, e.target.checked);
@@ -138,6 +195,16 @@ export const CheckBoxChoices = props => {
       props.index
     );
   };
+
+  // useEffect(() => {
+  //   debugger;
+  //   console.log("Sel " + props.selectedChoice);
+  //   if (props.selectedChoice === null) {
+  //     setIsChecked(false);
+  //   } else {
+  //     setIsChecked(true);
+  //   }
+  // }, [props.selectedChoice]);
 
   return (
     <div className={classes.root}>
@@ -167,9 +234,10 @@ export const CheckBoxChoices = props => {
           </Grid>
           <Grid item xs={4} style={{ textAlign: "right" }}>
             <Checkbox
-              inputRef={mRef}
+              //inputRef={mRef}
               edge="end"
               size="small"
+              checked={isChecked}
               // checked={}
               onChange={e => onCheckboxChange(e, props.itemDetail)}
             />
@@ -205,8 +273,14 @@ export const CheckBoxChoices = props => {
   // );
 };
 
-const RadioChoiceGroup = ({ choices, handleRadioSelection }) => {
+const RadioChoiceGroup = ({
+  choices,
+  handleRadioSelection,
+  selectedChoices,
+  ...props
+}) => {
   const [selected, setSelected] = useState(null);
+  let ordSelected = null;
 
   const handleSelection = newChoice => {
     let preChoice = selected;
@@ -214,12 +288,22 @@ const RadioChoiceGroup = ({ choices, handleRadioSelection }) => {
     handleRadioSelection(preChoice, newChoice);
   };
 
+  if (selectedChoices.length > 0) {
+    choices.forEach(Rch => {
+      selectedChoices.forEach(ch => {
+        if (Rch.id === ch.productChoiceDetailId) {
+          ordSelected = { ...Rch };
+        }
+      });
+    });
+  }
+
   const choiceList = choices.map(choice => {
     return (
       <RadioChoice
         key={choice.fullName}
         itemDetail={choice}
-        selected={selected}
+        selected={ordSelected || selected}
         handleChange={handleSelection}
       />
     );
