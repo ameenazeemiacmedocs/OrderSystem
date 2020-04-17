@@ -513,8 +513,6 @@ export const OrderLanding = props => {
             .catch(stripeError => {
               console.log(stripeError);
               alert("Error on Stripe " + stripeError);
-              setOrder(response.data);
-              setClientSecret(successSecret.data);
             });
         }
 
