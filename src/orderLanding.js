@@ -43,6 +43,9 @@ import { foodMenus } from "./data";
 import { FoodArea } from "./FoodMenu";
 import LoadingOverlay from "./common/LoadingOverlay";
 
+import Slide from "@material-ui/core/Slide";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
+
 //import CreditCardDetail from "./Cards/CreditCardDetail";
 //const InjectedCreditCard = injectStripe(CreditCardDetail, { withRef: true });
 
@@ -52,11 +55,44 @@ import logo from "./images/logo.jpg";
 import { OrderAddress, OrderPayment, OrderTotals, GuestOrder } from "./order";
 const useStyles = makeStyles(theme => ({
   root: {
-    width: "100%"
+    toolbar: theme.mixins.toolbar,
+    width: "100%",
+    height: "100%"
     // marginBottom: 5
   },
+  contentRoot: {},
+
   title: {
     flexGrow: 1
+  },
+  titleTextContainer: {
+    display: "flex",
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  titleTextContainerN: {
+    display: "flex",
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+
+  titleText: {
+    // flexGrow: 1,
+    width: "100%",
+    alignSelf: "center",
+    justifyContent: "center"
+  },
+  extraText: {
+    width: "100%",
+    // flexWrap: 'nowrap',
+    flexGrow: 1,
+    textAlign: "right",
+    alignSelf: "flex-end",
+    justifyContent: "flex-end"
   },
 
   heading: {
@@ -577,21 +613,60 @@ export const OrderLanding = props => {
     // setOrder(newOrder);
     //setOrder({ ...order,orderDeliverAddress: deliverAddress });
   };
+
+  const trigger = useScrollTrigger();
+
   return (
     <div className={classes.root}>
       <LoadingOverlay open={isLoading} title="Processing Payment.." />
 
-      <AppBar position="static">
-        <Toolbar variant="regular">
-          <Typography variant="h6" className={classes.title} align="center">
-            {myInfo !== null && myInfo.clientName}
-          </Typography>
+      {/* <AppBar
+        position="sticky"
+        // className={trigger ? classes.hide : classes.show}
+      >
+        <Toolbar variant={trigger ? "dense" : "regular"}>
+          <div className={classes.titleTextContainer}>
+            <Typography
+              variant="h6"
+              className={classes.titleText}
+              align="center"
+            >
+              {myInfo !== null && myInfo.clientName}
+            </Typography>
+          </div>
+        </Toolbar>
+      </AppBar> */}
+
+      <AppBar
+        position="sticky"
+        // style={{ top: trigger ? "45px" : "50px" }}
+        color="primary"
+        // className={trigger ? classes.hide : classes.show}
+      >
+        <Toolbar variant={trigger ? "dense" : "regular"}>
+          <div className={classes.titleTextContainer}>
+            <Typography
+              variant="body1"
+              className={classes.titleText}
+              align="center"
+            >
+              {myInfo !== null && myInfo.clientName}
+            </Typography>
+            {/* <Typography
+              variant="body1"
+              className={classes.extraText}
+              align="right"
+            >
+              delivery time : {"05:00"}
+            </Typography> */}
+          </div>
         </Toolbar>
       </AppBar>
-      <br />
+
+      {/* <br /> */}
       <Divider />
 
-      <div className={classes.root}>
+      <div className={classes.contentRoot}>
         {guests.map(g => (
           <GuestOrder
             key={g.guestId}
