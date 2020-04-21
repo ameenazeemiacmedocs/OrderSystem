@@ -39,6 +39,7 @@ export const OrderPayment = props => {
               <SplitForm
                 totalAmount={order != null && order.netTotal}
                 onPayment={props.onPayment}
+                isValid={props.isValid}
               />
             </Grid>
             {/* <ElementDemos demos={demos} /> */}

@@ -14,6 +14,7 @@ function StripeTextField(props) {
     <TextField
       fullWidth
       variant="outlined"
+      required
       InputLabelProps={{
         ...InputLabelProps,
         shrink: true

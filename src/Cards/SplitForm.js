@@ -76,6 +76,59 @@ const SplitForm = props => {
   const options = useOptions();
   const [isFormSubmit, setIsFormSubmit] = React.useState(false);
 
+  const [cardNumber, setCardNumber] = React.useState({
+    error: undefined,
+    empty: false,
+    complete: false
+  });
+
+  const [expiry, setExpiry] = React.useState({
+    error: undefined,
+    empty: false,
+    complete: false
+  });
+  const [ccv, setCCV] = React.useState({
+    elementType: "cardExpiry",
+    error: undefined,
+
+    empty: false,
+    complete: false
+  });
+
+  const onElementChange = event => {
+    // console.log("Event " + event.error.message);
+
+    if (event.elementType === "cardNumber") {
+      let nCard = { ...cardNumber };
+      nCard.error = event.error;
+      nCard.empty = event.empty;
+      nCard.complete = event.complete;
+
+      setCardNumber(nCard);
+      // setCardNumber(oldCard=> {...oldCard,nCard});
+      // Card e
+    } else if (event.elementType === "cardCvc") {
+      let nCard = { ...ccv };
+      nCard.error = event.error;
+      nCard.empty = event.empty;
+      nCard.complete = event.complete;
+
+      setCCV(nCard);
+    } else if (event.elementType === "cardExpiry") {
+      let nCard = { ...expiry };
+      nCard.error = event.error;
+      nCard.empty = event.empty;
+      nCard.complete = event.complete;
+
+      setExpiry(nCard);
+    }
+  };
+
+  const isFormValid = () => {
+    if (cardNumber.complete && expiry.complete && ccv.complete) return true;
+    else return false;
+  };
+
   const handleSubmit = async event => {
     debugger;
     event.preventDefault();
@@ -85,12 +138,20 @@ const SplitForm = props => {
       // form submission until Stripe.js has loaded.
       return;
     }
+
+    if (!isFormValid()) {
+      alert("Please fill all Payment Information");
+      return;
+    }
+
     // setIsFormSubmit(true);
     const paymethod = {
       card: elements.getElement(CardNumberElement),
       billing_details: { name: "checkout.MobileNumber" }
     };
-    props.onPayment(paymethod);
+
+    alert("Payment is valid");
+    // props.onPayment(paymethod);
 
     // try {
     //   const checkout = {
@@ -142,30 +203,38 @@ const SplitForm = props => {
   };
   return (
     // <div className={classes.root}>
-    <form className={classes.root} onSubmit={handleSubmit} noValidate>
+    <form className={classes.root} onSubmit={handleSubmit}>
       <Grid container spacing={1} justify="flex-start">
         <Grid item xs={12}>
           <StripeTextFieldNumber
-          // error={Boolean(cardNumberError)}
-          // labelErrorMessage={cardNumberError}
-          // onChange={this.onElementChange(
-          //   "creditCardNumberComplete",
-          //   "cardNumberError"
-          // )}
+            onChange={onElementChange}
+            error={cardNumber.error}
+            labelErrorMessage={cardNumber.error}
+            // onChange={this.onElementChange(
+            //   "creditCardNumberComplete",
+            //   "cardNumberError"
+            // )}
           />
         </Grid>
         <Grid item xs={6}>
           <StripeTextFieldExpiry
-          // error={Boolean(cardNumberError)}
-          // labelErrorMessage={cardNumberError}
-          // onChange={this.onElementChange(
-          //   "creditCardNumberComplete",
-          //   "cardNumberError"
-          // )}
+            onChange={onElementChange}
+            error={expiry.error}
+            labelErrorMessage={expiry.error}
+            // error={Boolean(cardNumberError)}
+            // labelErrorMessage={cardNumberError}
+            // onChange={this.onElementChange(
+            //   "creditCardNumberComplete",
+            //   "cardNumberError"
+            // )}
           />
         </Grid>
         <Grid item xs={6}>
-          <StripeTextFieldCVC />
+          <StripeTextFieldCVC
+            error={ccv.error}
+            labelErrorMessage={ccv.error}
+            onChange={onElementChange}
+          />
         </Grid>
         <Grid item xs={12}>
           <Button
@@ -173,7 +242,13 @@ const SplitForm = props => {
             variant="contained"
             color="primary"
             size="large"
-            disabled={!stripe || props.totalAmount <= 0 || isFormSubmit}
+            disabled={
+              !stripe ||
+              props.totalAmount <= 0 ||
+              isFormSubmit ||
+              !isFormValid() ||
+              !props.isValid
+            }
           >
             Pay ${props.totalAmount}
           </Button>

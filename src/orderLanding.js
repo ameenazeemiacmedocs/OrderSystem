@@ -117,9 +117,9 @@ export const OrderLanding = props => {
   //const [client, setClient] = useState("");
   //const [sourceource, setSource] = useState("url");
 
-  const [orderDetails, setOrderDetails] = useState([]);
-  const [isOrderSaved, setIsOrderSaved] = useState(false);
-  const [bestTime, SetBestTime] = useState([{ id: 1, display: "ASAP" }]);
+  //const [orderDetails, setOrderDetails] = useState([]);
+  //const [isOrderSaved, setIsOrderSaved] = useState(false);
+  //const [bestTime, SetBestTime] = useState([{ id: 1, display: "ASAP" }]);
   const [guests, setGuests] = useState([
     {
       guestId: "1",
@@ -196,12 +196,12 @@ export const OrderLanding = props => {
   const [deliveryAddress, setDeliveryAddress] = useState({
     id: "00000000-0000-0000-0000-000000000000",
     clientCode: client,
-    name: "ameen",
-    mobileNumber: "03444441166",
-    address: "66 f2 johar town",
-    state: "punjab",
-    city: "Lahore",
-    zipCode: "54301",
+    name: "",
+    mobileNumber: "",
+    address: "",
+    state: "",
+    city: "",
+    zipCode: "",
     orderId: "00000000-0000-0000-0000-000000000000",
     order: null
   });
@@ -219,177 +219,92 @@ export const OrderLanding = props => {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
   }
 
-  // effect on having client
-  // useEffect(() => {
-  //   console.log("Client Effect");
-  //   if (client === "") {
-  //     var clientParam = getParameterByName("c");
-  //     if (clientParam === "" || clientParam === null) {
-  //       setClient("POSIGENT-DEV");
-  //     } else {
-  //       setClient(clientParam);
-  //     }
-  //     var clientSource = getParameterByName("s");
-
-  //     if (clientSource === "" || clientSource === null) {
-  //       setSource("URL");
-  //     }
-  //   }
-
-  //   if (foodMenu == null && client !== "") {
-  //     // axios.defaults.headers.common["CLIENT_CODE"] = client;
-  //     // var formData = new FormData();
-  //     // formData.append("source", clientSource);
-  //     // axios.post(`${apiURL}orders/defaultOrder`, formData, {
-  //     //   headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
-  //     // }).then(result => {
-
-  //     //   setDefOrder(result.data);
-  //     // })
-  //     //   .catch(error => {
-  //     //     console.error(error);
-  //     //   });
-
-  //     setIsLoading(true);
-
-  //     console.log("main demo");
-  //     axios
-  //       .all([
-  //         axios.get(`${apiURL}orders/myProducts`, {
-  //           headers: {
-  //             "content-type": "multipart/form-data",
-  //             CLIENT_CODE: client
-  //           }
-  //         }),
-  //         axios.get(`${apiURL}orders/myInfo`, {
-  //           headers: {
-  //             "content-type": "multipart/form-data",
-  //             CLIENT_CODE: client
-  //           }
-  //         })
-  //       ])
-  //       .then(
-  //         axios.spread((...responses) => {
-  //           setFoodMenus(responses[0].data);
-  //           // console.log(responses[1]);
-  //           setMyInfo(responses[1].data);
-  //           setIsLoading(false);
-  //         })
-  //       )
-  //       .catch(error => {
-  //         setIsLoading(false);
-  //       });
-  //     // axios.get(`${apiURL}orders/myProducts`, {
-  //     //   headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
-  //     // }).then(result => {
-  //     //   setFoodMenus(result.data);
-  //     //   setIsLoading(false);
-  //     // })
-  //     //   .catch(error => {
-  //     //     setIsLoading(false);
-  //     //     console.error(error);
-  //     //   });
-  //   }
-  // }, [client]);
-
-  // getMyProducts = () => {
-
-  //   return axios.get(`${apiURL}orders/myProducts`, {
-  //     headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
-  //   });
-  // };
-  // getMyInfo = () => {
-  //   return axios.get(`${apiURL}orders/myInfo`, {
-  //     headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
-  //   });
-
-  // };
   //effect on changes of Order Detail
-  useEffect(() => {
-    console.log("Order is " + order);
-    //console.log(props.location.query);
-    updateGuestsTotal();
-    // updateOrder();
-  }, [orderDetails]);
+  // useEffect(() => {
+  //   console.log("Order is " + order);
+  //   //console.log(props.location.query);
+  //   updateGuestsTotal();
+  //   // updateOrder();
+  // }, [orderDetails]);
 
-  useEffect(() => {
-    updateOrder();
-  }, [deliveryAddress]);
+  // useEffect(() => {
+  //   updateOrder();
+  // }, [deliveryAddress]);
 
   //const GuestContext = React.createContext(orderDetails);
-  const updateGuestsTotal = () => {
-    //debuggger;
-    var helper = [];
-    if (orderDetails === null || orderDetails.length === 0) {
-      let guestArr = [...guests];
-      let subTotal = 0;
-      guestArr.forEach(p => {
-        //console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
+  // const updateGuestsTotal = () => {
+  //   //debuggger;
+  //   var helper = [];
+  //   if (orderDetails === null || orderDetails.length === 0) {
+  //     let guestArr = [...guests];
+  //     let subTotal = 0;
+  //     guestArr.forEach(p => {
+  //       //console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
 
-        p.totalAmount = 0;
-        p.totalItems = 0;
-      });
-      setGuests(guestArr);
-      let oldOrder = order;
-      oldOrder.orderTotal = subTotal;
-      oldOrder.tax = 0;
-      oldOrder.netTotal = oldOrder.orderTotal + oldOrder.tax;
-      setOrder(oldOrder);
+  //       p.totalAmount = 0;
+  //       p.totalItems = 0;
+  //     });
+  //     setGuests(guestArr);
+  //     let oldOrder = order;
+  //     oldOrder.orderTotal = subTotal;
+  //     oldOrder.tax = 0;
+  //     oldOrder.netTotal = oldOrder.orderTotal + oldOrder.tax;
+  //     setOrder(oldOrder);
 
-      return;
-    }
-    var results = orderDetails.reduce(function(r, o) {
-      //console.log(" guest " + o.guestId);
-      var key = o.guestSeq;
-      let extraCharge = 0;
-      o.orderChoices.forEach(oc => {
-        extraCharge += oc.extraCharges;
-        //console.log("extraCharge " + oc.extraCharge);
-      });
-      if (!helper[key]) {
-        helper[key] = Object.assign(
-          {},
-          { guestId: o.guestSeq, amount: o.subTotal + extraCharge, qty: o.qty }
-        );
-        r.push(helper[key]);
-      } else {
-        helper[key].amount += o.subTotal + extraCharge;
-        helper[key].qty += o.qty;
-      }
-      return r;
-    }, []);
+  //     return;
+  //   }
+  //   var results = orderDetails.reduce(function(r, o) {
+  //     //console.log(" guest " + o.guestId);
+  //     var key = o.guestSeq;
+  //     let extraCharge = 0;
+  //     o.orderChoices.forEach(oc => {
+  //       extraCharge += oc.extraCharges;
+  //       //console.log("extraCharge " + oc.extraCharge);
+  //     });
+  //     if (!helper[key]) {
+  //       helper[key] = Object.assign(
+  //         {},
+  //         { guestId: o.guestSeq, amount: o.subTotal + extraCharge, qty: o.qty }
+  //       );
+  //       r.push(helper[key]);
+  //     } else {
+  //       helper[key].amount += o.subTotal + extraCharge;
+  //       helper[key].qty += o.qty;
+  //     }
+  //     return r;
+  //   }, []);
 
-    let guestArr = [...guests];
-    //reset guests index
-    guestArr.forEach(p => {
-      p.totalAmount = 0;
-      p.totalItems = 0;
-    });
-    let subTotal = 0;
+  //   let guestArr = [...guests];
+  //   //reset guests index
+  //   guestArr.forEach(p => {
+  //     p.totalAmount = 0;
+  //     p.totalItems = 0;
+  //   });
+  //   let subTotal = 0;
 
-    results.forEach(p => {
-      //console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
-      var guestIndex = getIndex(p.guestId, guests, "guestId");
-      if (guestIndex >= 0) {
-        subTotal += p.amount;
-        guestArr[guestIndex].totalAmount = p.amount;
-        guestArr[guestIndex].totalItems = p.qty;
-      }
-    });
-    setGuests(guestArr);
-    let oldOrder = order;
-    oldOrder.orderTotal = subTotal;
-    oldOrder.tax = 0;
-    oldOrder.netTotal = oldOrder.orderTotal + oldOrder.tax;
+  //   results.forEach(p => {
+  //     //console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
+  //     var guestIndex = getIndex(p.guestId, guests, "guestId");
+  //     if (guestIndex >= 0) {
+  //       subTotal += p.amount;
+  //       guestArr[guestIndex].totalAmount = p.amount;
+  //       guestArr[guestIndex].totalItems = p.qty;
+  //     }
+  //   });
+  //   setGuests(guestArr);
+  //   let oldOrder = order;
+  //   oldOrder.orderTotal = subTotal;
+  //   oldOrder.tax = 0;
+  //   oldOrder.netTotal = oldOrder.orderTotal + oldOrder.tax;
 
-    oldOrder.orderDetails = [];
-    orderDetails.forEach(od => {
-      oldOrder.orderDetails.push(od);
-    });
+  //   oldOrder.orderDetails = [];
+  //   orderDetails.forEach(od => {
+  //     oldOrder.orderDetails.push(od);
+  //   });
 
-    setOrder(oldOrder);
-    // console.log(results);
-  };
+  //   setOrder(oldOrder);
+  //   // console.log(results);
+  // };
 
   const onChangeQty = (
     menuItem,
@@ -429,17 +344,6 @@ export const OrderLanding = props => {
   };
   const onDeliveryTypeChange = value => {
     setDeliveryType(value);
-  };
-
-  const updateOrder = () => {
-    var newOrder = { ...order };
-
-    // newOrder.orderDetails = [];
-    // orderDetails.forEach(od => {
-    //   newOrder.orderDetails.push(od);
-    // });
-    newOrder.orderDeliverAddress = deliveryAddress;
-    setOrder(newOrder);
   };
 
   const callStripe = (clientSecret, payment_method) => {
@@ -507,8 +411,10 @@ export const OrderLanding = props => {
   const onPayment = async payment_method => {
     debugger;
     setIsLoading(true);
+    let newOrder = { ...order };
+    newOrder.orderDeliverAddress = deliveryAddress;
     await axios
-      .post(`${apiURL}orders`, order, {
+      .post(`${apiURL}orders`, newOrder, {
         headers: { "content-type": "application/json", CLIENT_CODE: client }
       })
       .then(response => {
@@ -571,7 +477,7 @@ export const OrderLanding = props => {
     setGuests(guestArr);
   };
   const onAddressChange = (fieldName, fieldValue) => {
-    console.log("Field " + fieldName + " value " + fieldValue);
+    // console.log("Field " + fieldName + " value " + fieldValue);
     //console.log({...deliveryAddress});
     // let address=deliveryAddress;
     // console.log("address value of name "+address.name);
@@ -643,7 +549,8 @@ export const OrderLanding = props => {
         color="primary"
         // className={trigger ? classes.hide : classes.show}
       >
-        <Toolbar variant={trigger ? "dense" : "regular"}>
+        {/* <Toolbar variant={trigger ? "dense" : "regular"}> */}
+        <Toolbar>
           <div className={classes.titleTextContainer}>
             <Typography
               variant="body1"
@@ -674,7 +581,7 @@ export const OrderLanding = props => {
             guestId={g.guestId}
             totalItems={g.totalItems}
             totalAmount={g.totalAmount}
-            orderDetails={orderDetails}
+            orderDetails={order.orderDetails}
             onChangeQty={onChangeQty}
             onGuestHandleClick={onGuestHandleClick}
             isGuestOpen={isGuestOpen(g.guestId)}
@@ -701,7 +608,7 @@ export const OrderLanding = props => {
                 onDeliveryTypeChange={onDeliveryTypeChange}
               />
             </Grid>
-            <Grid item xs={3}>
+            {/* <Grid item xs={3}>
               <DropdownSelector
                 onSelected={val => {
                   alert("Selected " + val);
@@ -715,24 +622,15 @@ export const OrderLanding = props => {
                 valueId="id"
                 displayName="display"
               />
-              {/* <Select
-                labelId="demo-simple-select-outlined-label"
-                id="demo-simple-select-outlined"
-                //value={age}
-                //onChange={handleChange}
-                label="ASAP"
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-              </Select> */}
-            </Grid>
+          
+            </Grid> */}
             <Grid item xs={12}>
               <OrderPayment
                 order={order}
+                isValid={
+                  deliveryAddress.name !== "" &&
+                  deliveryAddress.mobileNumber !== ""
+                }
                 myKey={myInfo === null ? "" : myInfo.stripeTestKey}
                 onPayment={onPayment}
               />
@@ -778,10 +676,10 @@ export const OrderLanding = props => {
   }
 
   function getOrderDetailByGuestId(menuId, guestId) {
-    for (var i = 0; i < orderDetails.length; i++) {
+    for (var i = 0; i < order.orderDetails.length; i++) {
       if (
-        orderDetails[i]["productId"] === menuId &&
-        orderDetails[i]["guestSeq"] === guestId
+        order.orderDetails[i]["productId"] === menuId &&
+        order.orderDetails[i]["guestSeq"] === guestId
       ) {
         return i;
       }
@@ -851,7 +749,12 @@ export const OrderLanding = props => {
     // newOrder.orderDetails.push(orderDetail);
     // setOrder(newOrder);
 
-    setOrderDetails(oldDetails => [...oldDetails, orderDetail]);
+    let newOrder = { ...order };
+    newOrder.orderDetails.push(orderDetail);
+
+    updateGuestTotal(newOrder);
+    setOrder(newOrder);
+    //setOrderDetails(oldDetails => [...oldDetails, orderDetail]);
   }
 
   function updateOrderDetailByGuest(
@@ -860,7 +763,9 @@ export const OrderLanding = props => {
     isAdded,
     otherChargesSeq
   ) {
-    let odArr = [...orderDetails];
+    let newOrder = { ...order };
+    let odArr = newOrder.orderDetails;
+    //let odArr = [...orderDetails];
     // for qty update
     if (otherCharges === undefined) {
       let qty = 1;
@@ -907,6 +812,84 @@ export const OrderLanding = props => {
           odArr[orderDetailIndex].orderChoices.splice(chargesIndex, 1);
       }
     } // enf of orher charges
-    setOrderDetails(odArr);
+    newOrder.orderDetails = odArr;
+
+    updateGuestTotal(newOrder);
+    setOrder(newOrder);
+    // setOrderDetails(odArr);
   } // enf of updated guest order details
+
+  function updateGuestTotal(oldOrder) {
+    let orderDetails = oldOrder.orderDetails;
+    //debuggger;
+    var helper = [];
+    if (orderDetails === null || orderDetails.length === 0) {
+      let guestArr = [...guests];
+      let subTotal = 0;
+      guestArr.forEach(p => {
+        //console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
+
+        p.totalAmount = 0;
+        p.totalItems = 0;
+      });
+      setGuests(guestArr);
+      //let oldOrder = order;
+      oldOrder.orderTotal = subTotal;
+      oldOrder.tax = 0;
+      oldOrder.netTotal = oldOrder.orderTotal + oldOrder.tax;
+      setOrder(oldOrder);
+
+      return;
+    }
+    var results = orderDetails.reduce(function(r, o) {
+      //console.log(" guest " + o.guestId);
+      var key = o.guestSeq;
+      let extraCharge = 0;
+      o.orderChoices.forEach(oc => {
+        extraCharge += oc.extraCharges;
+        //console.log("extraCharge " + oc.extraCharge);
+      });
+      if (!helper[key]) {
+        helper[key] = Object.assign(
+          {},
+          { guestId: o.guestSeq, amount: o.subTotal + extraCharge, qty: o.qty }
+        );
+        r.push(helper[key]);
+      } else {
+        helper[key].amount += o.subTotal + extraCharge;
+        helper[key].qty += o.qty;
+      }
+      return r;
+    }, []);
+
+    let guestArr = [...guests];
+    //reset guests index
+    guestArr.forEach(p => {
+      p.totalAmount = 0;
+      p.totalItems = 0;
+    });
+    let subTotal = 0;
+
+    results.forEach(p => {
+      //console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
+      var guestIndex = getIndex(p.guestId, guests, "guestId");
+      if (guestIndex >= 0) {
+        subTotal += p.amount;
+        guestArr[guestIndex].totalAmount = p.amount;
+        guestArr[guestIndex].totalItems = p.qty;
+      }
+    });
+    setGuests(guestArr);
+    // let oldOrder = order;
+    oldOrder.orderTotal = subTotal;
+    oldOrder.tax = 0;
+    oldOrder.netTotal = oldOrder.orderTotal + oldOrder.tax;
+
+    // oldOrder.orderDetails = [];
+    // orderDetails.forEach(od => {
+    //   oldOrder.orderDetails.push(od);
+    // });
+
+    // setOrder(oldOrder);
+  }
 };
