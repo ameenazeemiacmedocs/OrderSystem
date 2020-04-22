@@ -56,10 +56,7 @@ import Slide from "@material-ui/core/Slide";
 
 import axios from "axios";
 
-import logo from "./images/logo.jpg";
-import blackLogo from "./images/png/Black_logo-no_background.png";
 
-import AppToolbar from "./appToolbar.js";
 
 import { OrderAddress, OrderPayment, OrderTotals, GuestOrder } from "./order";
 const useStyles = makeStyles(theme => ({
