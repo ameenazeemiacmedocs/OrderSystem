@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import CardMedia from "@material-ui/core/CardMedia";
+import { blue } from "@material-ui/core/colors";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
+
 import ReactDOM from "react-dom";
 import {
   useStripe,
@@ -9,6 +13,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { flexbox } from "@material-ui/system";
 import { DropdownSelector } from "./common/DropdownSelector";
+import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import {
@@ -26,7 +31,8 @@ import {
   CardContent,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Container
 } from "@material-ui/core";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -44,13 +50,13 @@ import { FoodArea } from "./FoodMenu";
 import LoadingOverlay from "./common/LoadingOverlay";
 
 import Slide from "@material-ui/core/Slide";
-import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 
 //import CreditCardDetail from "./Cards/CreditCardDetail";
 //const InjectedCreditCard = injectStripe(CreditCardDetail, { withRef: true });
 
 import axios from "axios";
-import logo from "./images/logo.jpg";
+
+//import AppToolbar from "./appToolbar.js";
 
 import { OrderAddress, OrderPayment, OrderTotals, GuestOrder } from "./order";
 const useStyles = makeStyles(theme => ({
@@ -65,17 +71,27 @@ const useStyles = makeStyles(theme => ({
   title: {
     flexGrow: 1
   },
-  titleTextContainer: {
+  large: {
+    width: theme.spacing(7),
+    height: theme.spacing(7)
+  },
+  merlin: {
+    width: theme.spacing(7),
+    height: theme.spacing(7),
+    color: theme.palette.getContrastText(blue[500]),
+    backgroundColor: theme.palette.primary.main
+  },
+  toolbarContent: {
     display: "flex",
     width: "100%",
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center"
   },
-  titleTextContainerN: {
+  toolbarContentN: {
     display: "flex",
     width: "100%",
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center"
   },
@@ -83,8 +99,9 @@ const useStyles = makeStyles(theme => ({
   titleText: {
     // flexGrow: 1,
     width: "100%",
-    alignSelf: "center",
-    justifyContent: "center"
+    alignSelf: "flex-start",
+    justifyContent: "flex-start",
+    textAlign: "left"
   },
   extraText: {
     width: "100%",
@@ -109,6 +126,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const OrderLanding = props => {
+  const trigger = useScrollTrigger({ threshold: 0, disableHysteresis: true });
+
   const stripe = useStripe();
   const elements = useElements();
   const { apiURL, client, source, foodMenu, myInfo, onPaymentSuccess } = props;
@@ -218,6 +237,9 @@ export const OrderLanding = props => {
     if (!results[2]) return "";
     return decodeURIComponent(results[2].replace(/\+/g, " "));
   }
+  useEffect(() => {
+    console.log(trigger);
+  }, [trigger]);
 
   //effect on changes of Order Detail
   // useEffect(() => {
@@ -520,95 +542,112 @@ export const OrderLanding = props => {
     //setOrder({ ...order,orderDeliverAddress: deliverAddress });
   };
 
-  const trigger = useScrollTrigger();
-
   return (
     <div className={classes.root}>
-      <LoadingOverlay open={isLoading} title="Processing Payment.." />
+      {/* <Container disableGutters="false" maxWidth="xs"> */}
+      <Container disableGutters="false" maxWidth="xs">
+        <LoadingOverlay open={isLoading} title="Processing Payment.." />
 
-      {/* <AppBar
-        position="sticky"
-        // className={trigger ? classes.hide : classes.show}
-      >
-        <Toolbar variant={trigger ? "dense" : "regular"}>
-          <div className={classes.titleTextContainer}>
-            <Typography
-              variant="h6"
-              className={classes.titleText}
-              align="center"
-            >
-              {myInfo !== null && myInfo.clientName}
-            </Typography>
-          </div>
-        </Toolbar>
-      </AppBar> */}
-
-      <AppBar
-        position="sticky"
-        // style={{ top: trigger ? "45px" : "50px" }}
-        color="primary"
-        // className={trigger ? classes.hide : classes.show}
-      >
-        {/* <Toolbar variant={trigger ? "dense" : "regular"}> */}
-        <Toolbar>
-          <div className={classes.titleTextContainer}>
-            <Typography
-              variant="body1"
-              className={classes.titleText}
-              align="center"
-            >
-              {myInfo !== null && myInfo.clientName}
-            </Typography>
-            {/* <Typography
-              variant="body1"
-              className={classes.extraText}
-              align="right"
-            >
-              delivery time : {"05:00"}
-            </Typography> */}
-          </div>
-        </Toolbar>
-      </AppBar>
-
-      {/* <br /> */}
-      <Divider />
-
-      <div className={classes.contentRoot}>
-        {guests.map(g => (
-          <GuestOrder
-            key={g.guestId}
-            guestName={g.guestName}
-            guestId={g.guestId}
-            totalItems={g.totalItems}
-            totalAmount={g.totalAmount}
-            orderDetails={order.orderDetails}
-            onChangeQty={onChangeQty}
-            onGuestHandleClick={onGuestHandleClick}
-            isGuestOpen={isGuestOpen(g.guestId)}
-            order={order}
-            foodMenus={foodMenu}
-            onChangeGuestTitle={onChangeGuestTitle}
-          />
-        ))}
-
-        <div>
-          <Grid container spacing={2} justify="flex-end">
-            <Grid item>
-              <Button variant="contained" color="primary" onClick={addGuest}>
-                Add Another Guest
-              </Button>
-            </Grid>
-            <Grid item xs={12}>
-              <OrderTotals order={order} />
-            </Grid>
-            <Grid item xs={12}>
-              <OrderAddress
-                address={deliveryAddress}
-                onAddressChange={onAddressChange}
-                onDeliveryTypeChange={onDeliveryTypeChange}
+        {/* <AppBar color="transparent" position="sticky"> */}
+        {!trigger ? (
+          <Box>
+            <Box boxShadow={0}>
+              <CardMedia
+                component="img"
+                //height="75"
+                className={classes.media}
+                image="https://posigentstorage.blob.core.windows.net/logos/Color%20logo%20with%20background.png"
+                title=""
               />
-            </Grid>
-            {/* <Grid item xs={3}>
+            </Box>
+            <Box
+              color="primary.main"
+              //fontWeight={500}
+              // fontSize="h6.fontSize"
+              textAlign="left"
+              m={1}
+            >
+              Your order will be delivered between 7:15 and 7:45
+            </Box>
+            <Box p={0} m={1} color="primary.main">
+              <Grid container alignItems="center" spacing={5}>
+                <Grid item xs={2}>
+                  <Avatar variant="square" className={classes.merlin}>
+                    Cl
+                  </Avatar>
+                </Grid>
+                <Grid item xs={10}>
+                  Welcome, this is how you order
+                </Grid>
+              </Grid>
+            </Box>
+          </Box>
+        ) : (
+          // <ElevationScroll {...props}>
+          <AppBar position="sticky" color="default">
+            <Box p={0} m={1} color="primary.main">
+              <Grid container alignItems="center" spacing={5}>
+                <Grid item xs={2}>
+                  <Avatar
+                    variant="square"
+                    // className={classes.merlin}
+                    src="https://posigentstorage.blob.core.windows.net/logos/favicon.ico"
+                  >
+                    P
+                  </Avatar>
+                </Grid>
+                <Grid item xs={10}>
+                  Your order will be delivered between 7:15 and 7:45
+                </Grid>
+              </Grid>
+            </Box>
+          </AppBar>
+        )}
+        {/* </AppBar> */}
+
+        {/* <AppToolbar
+        topLogo={blackLogo}
+        merlinLogo={
+          "https://posigentcom-my.sharepoint.com/personal/usman_mahmood_posigent_com/Documents/logo/merlin-logo.png"
+        }
+      /> */}
+        <Divider />
+        <div className={classes.contentRoot}>
+          {guests.map(g => (
+            <GuestOrder
+              key={g.guestId}
+              guestName={g.guestName}
+              guestId={g.guestId}
+              totalItems={g.totalItems}
+              totalAmount={g.totalAmount}
+              orderDetails={order.orderDetails}
+              onChangeQty={onChangeQty}
+              onGuestHandleClick={onGuestHandleClick}
+              isGuestOpen={isGuestOpen(g.guestId)}
+              order={order}
+              foodMenus={foodMenu}
+              onChangeGuestTitle={onChangeGuestTitle}
+            />
+          ))}
+          {/* {trigger ? "Trigger" : "Not Trigger"} */}
+          <div>
+            <Grid container spacing={2} justify="flex-end">
+              <Grid item>
+                <Button variant="contained" color="primary" onClick={addGuest}>
+                  Add Another Guest
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <OrderTotals order={order} />
+              </Grid>
+              <Grid item xs={12}>
+                <OrderAddress
+                  address={deliveryAddress}
+                  onAddressChange={onAddressChange}
+                  onDeliveryTypeChange={onDeliveryTypeChange}
+                />
+              </Grid>
+              {/* <Grid item xs={3}>
               <DropdownSelector
                 onSelected={val => {
                   alert("Selected " + val);
@@ -624,20 +663,21 @@ export const OrderLanding = props => {
               />
           
             </Grid> */}
-            <Grid item xs={12}>
-              <OrderPayment
-                order={order}
-                isValid={
-                  deliveryAddress.name !== "" &&
-                  deliveryAddress.mobileNumber !== ""
-                }
-                myKey={myInfo === null ? "" : myInfo.stripeTestKey}
-                onPayment={onPayment}
-              />
+              <Grid item xs={12}>
+                <OrderPayment
+                  order={order}
+                  isValid={
+                    deliveryAddress.name !== "" &&
+                    deliveryAddress.mobileNumber !== ""
+                  }
+                  myKey={myInfo === null ? "" : myInfo.stripeTestKey}
+                  onPayment={onPayment}
+                />
+              </Grid>
             </Grid>
-          </Grid>
+          </div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 
@@ -892,4 +932,50 @@ export const OrderLanding = props => {
 
     // setOrder(oldOrder);
   }
+};
+function HideOnScroll(props) {
+  const { children, window } = props;
+  // Note that you normally won't need to set the window ref as useScrollTrigger
+  // will default to window.
+  // This is only being set here because the demo is in an iframe.
+  const trigger = useScrollTrigger({ target: window ? window() : undefined });
+
+  return (
+    <Slide appear={false} direction="down" in={!trigger}>
+      {children}
+    </Slide>
+  );
+}
+
+HideOnScroll.propTypes = {
+  children: PropTypes.element.isRequired,
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  window: PropTypes.func
+};
+function ElevationScroll(props) {
+  const { children, window } = props;
+  // Note that you normally won't need to set the window ref as useScrollTrigger
+  // will default to window.
+  // This is only being set here because the demo is in an iframe.
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 0,
+    target: window ? window() : undefined
+  });
+
+  return React.cloneElement(children, {
+    elevation: trigger ? 4 : 0
+  });
+}
+
+ElevationScroll.propTypes = {
+  children: PropTypes.element.isRequired,
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  window: PropTypes.func
 };

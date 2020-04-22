@@ -30,8 +30,7 @@ import {
   DialogActions,
   Dialog,
   DialogContent
-
-} from "@material-ui/core"
+} from "@material-ui/core";
 import List from "@material-ui/core/List";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -44,7 +43,7 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from "@material-ui/icons/Edit";
 //import { foodMenus } from "./data";
 // import { FoodArea } from "./food";
 import { FoodArea } from "../FoodMenu";
@@ -72,7 +71,7 @@ const useStyles = makeStyles(theme => ({
   },
   guestName: {
     "&:hover": {
-      color: "blue"
+      color: theme.palette.info.main
     }
   },
   guestItemContainer: {
@@ -102,8 +101,6 @@ export const GuestOrder = props => {
   const classes = useStyles();
   const [showNameEditor, setShowNameEditor] = React.useState(false);
 
-
-
   const [areaOpen, setAreaOpen] = React.useState([
     // { areaId: "1", isOpen: true }
   ]);
@@ -122,7 +119,7 @@ export const GuestOrder = props => {
   };
 
   const isAreaOpen = areaId => {
-    var isFindArea = areaOpen.find(function (a) {
+    var isFindArea = areaOpen.find(function(a) {
       return a.areaId === areaId;
     });
     if (isFindArea === undefined) {
@@ -147,24 +144,24 @@ export const GuestOrder = props => {
 
     props.onGuestHandleClick(props.guestId);
   };
-  const foodAreas = props.foodMenus != null && props.foodMenus.map(
-    area =>
-      area.menuItems.length > 0 && (
-        <FoodArea
-          key={area.name}
-          area={area}
-          onAreaHandleClick={onAreaHandleClick}
-          isAreaOpen={isAreaOpen(area.id)}
-          {...props}
-        />
-      )
-  );
+  const foodAreas =
+    props.foodMenus != null &&
+    props.foodMenus.map(
+      area =>
+        area.menuItems.length > 0 && (
+          <FoodArea
+            key={area.name}
+            area={area}
+            onAreaHandleClick={onAreaHandleClick}
+            isAreaOpen={isAreaOpen(area.id)}
+            {...props}
+          />
+        )
+    );
   const onDialogClose = (value, isCancel = false) => {
-
     if (!isCancel) {
       //alert("on Dialog with values " + value);
       props.onChangeGuestTitle(props.guestId, value);
-
     }
 
     setShowNameEditor(false);
@@ -176,7 +173,7 @@ export const GuestOrder = props => {
         //aria-labelledby="nested-list-subheader"
         className={classes.root}
       >
-        <Paper>
+        <Box bgcolor="primary.main" border="1" color="primary.contrastText">
           <ListItem
             key={props.guestId}
             button
@@ -197,91 +194,94 @@ export const GuestOrder = props => {
               </div>
               {/* <ListItemText primary={props.guestName} /> */}
               <div className={classes.guestItemRight}>
-                <Chip
-                  color="primary"
+                <Box color="primary.contrastText">{props.totalItems}</Box>
+                {/* <Chip
+                  color="primary.contrastText"
+                  //color="color="primary.contrastText""
                   variant="outlined"
                   //avatar={<Avatar></Avatar>}
                   label={props.totalItems}
-                />
-                <Chip
-                  color="primary"
+                /> */}
+                <Box color="primary.contrastText" ml={5}>
+                  {"$" + Number(props.totalAmount).toFixed(2)}
+                </Box>
+                {/* <Chip
+                  // color="primary"
+                  // color="primary.contrastText"
                   variant="outlined"
                   //avatar={<Avatar>$</Avatar>}
                   label={"$" + Number(props.totalAmount).toFixed(2)}
-                />
+                /> */}
+
                 {props.isGuestOpen ? <ExpandLess /> : <ExpandMore />}
               </div>
             </div>
           </ListItem>
-        </Paper>
+        </Box>
         <Collapse in={props.isGuestOpen} timeout="auto" unmountOnExit>
           <Paper>
             <List component="div" disablePadding>
-              {foodAreas}{"  "}
+              {foodAreas}
+              {"  "}
             </List>
           </Paper>
         </Collapse>
       </List>
-      <ChangeNameDialog isDialogOpen={showNameEditor} onDialogClose={onDialogClose} value={props.guestName} />
-
+      <ChangeNameDialog
+        isDialogOpen={showNameEditor}
+        onDialogClose={onDialogClose}
+        value={props.guestName}
+      />
     </div>
   );
 };
 
-
-export const ChangeNameDialog = (props) => {
-
+export const ChangeNameDialog = props => {
   const { isDialogOpen, onDialogClose, value } = props;
 
   const [name, setName] = useState(value);
 
   const nameInputRef = React.useRef();
   const handleCancel = () => {
-
     onDialogClose("", true);
   };
 
   const handleClose = () => {
-
     onDialogClose(nameInputRef.current.value);
   };
-  return (<div>
-
-    <Dialog
-      open={isDialogOpen}
-      fullWidth={true}
-      onClose={handleCancel}
-      aria-labelledby="form-dialog-title"
-    >
-      {/* <DialogTitle id="form-dialog-title">Subscribe</DialogTitle> */}
-      <DialogContent>
-        <DialogContentText>Enter guest name :</DialogContentText>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          label="Name"
-          fullWidth={true}
-          value={name}
-          inputRef={nameInputRef}
-          onChange={(event) => { setName(event.target.value); }}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCancel} color="primary">
-          Cancel
-            </Button>
-        <Button
-          virant="contained"
-          onClick={handleClose}
-          color="primary"
-        >
-          Submit
-            </Button>
-      </DialogActions>
-    </Dialog>
-
-
-  </div >);
-
+  return (
+    <div>
+      <Dialog
+        open={isDialogOpen}
+        fullWidth={true}
+        onClose={handleCancel}
+        aria-labelledby="form-dialog-title"
+      >
+        {/* <DialogTitle id="form-dialog-title">Subscribe</DialogTitle> */}
+        <DialogContent>
+          <DialogContentText>Enter guest name :</DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Name"
+            fullWidth={true}
+            value={name}
+            inputRef={nameInputRef}
+            onChange={event => {
+              setName(event.target.value);
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel} color="primary">
+            Cancel
+          </Button>
+          <Button virant="contained" onClick={handleClose} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
 };
