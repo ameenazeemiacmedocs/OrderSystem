@@ -56,8 +56,6 @@ import Slide from "@material-ui/core/Slide";
 
 import axios from "axios";
 
-
-
 import { OrderAddress, OrderPayment, OrderTotals, GuestOrder } from "./order";
 const useStyles = makeStyles(theme => ({
   root: {
@@ -738,7 +736,8 @@ export const OrderLanding = props => {
     );
   }
   function calculateTax(amount, tax) {
-    if (tax <= 0) return 0;
+    console.log("Tax Cal " + amount + " tax " + tax);
+    if (tax <= 0 || tax === null) return 0;
 
     return (tax / 100) * amount;
   }
@@ -760,7 +759,7 @@ export const OrderLanding = props => {
       productId: menuItem.id,
       product: null,
       rate: menuItem.basePrice,
-      tax: menuItem.taxPercentage,
+      tax: menuItem.taxPercentage === null ? 0 : menuItem.taxPercentage,
       discount: 0.0,
       qty: 1,
       subTotal: menuItem.basePrice,
@@ -911,7 +910,7 @@ export const OrderLanding = props => {
       } else {
         helper[key].amount += o.subTotal + extraCharge;
         helper[key].qty += o.qty;
-        helper[key].tax += calculateTax(helper[key], o.tax);
+        helper[key].tax += calculateTax(helper[key].amount, o.tax);
       }
       return r;
     }, []);
