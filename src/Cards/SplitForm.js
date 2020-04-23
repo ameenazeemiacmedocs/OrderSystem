@@ -150,8 +150,8 @@ const SplitForm = props => {
       billing_details: { name: "checkout.MobileNumber" }
     };
 
-    alert("Payment is valid");
-    // props.onPayment(paymethod);
+    //alert("Payment is valid");
+    props.onPayment(paymethod);
 
     // try {
     //   const checkout = {

@@ -825,8 +825,9 @@ export const OrderLanding = props => {
       //debuggger;
       // remove order detail row
       if (odArr[orderDetailIndex].qty <= 0) {
+        console.log("slice");
         //odArr[orderDetailIndex].splice(orderDetailIndex)
-        odArr.splice(orderDetailIndex);
+        // odArr.splice(orderDetailIndex);
       }
     } // other charges
     else {

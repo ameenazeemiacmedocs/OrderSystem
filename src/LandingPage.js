@@ -4,6 +4,7 @@ import { Typography } from "@material-ui/core";
 import LoadingOverlay from "./common/LoadingOverlay";
 import SuccessOverlay from "./common/SuccessOverlay";
 import { OrderLanding } from "./orderLanding";
+import Container from "@material-ui/core/Container";
 import CheckIcon from "@material-ui/icons/Check";
 import {
   createMuiTheme,
@@ -148,10 +149,12 @@ export const PaymentSuccessPage = props => {
   });
   return (
     <div>
-      <SuccessOverlay
-        open={showSuccessOverlay}
-        message={props.payment.sucessMessage}
-      />
+      <Container disableGutters="false" maxWidth="xs">
+        <SuccessOverlay
+          open={showSuccessOverlay}
+          message={props.payment.sucessMessage}
+        />
+      </Container>
     </div>
   );
 };
