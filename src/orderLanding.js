@@ -240,93 +240,6 @@ export const OrderLanding = props => {
     console.log(trigger);
   }, [trigger]);
 
-  //effect on changes of Order Detail
-  // useEffect(() => {
-  //   console.log("Order is " + order);
-  //   //console.log(props.location.query);
-  //   updateGuestsTotal();
-  //   // updateOrder();
-  // }, [orderDetails]);
-
-  // useEffect(() => {
-  //   updateOrder();
-  // }, [deliveryAddress]);
-
-  //const GuestContext = React.createContext(orderDetails);
-  // const updateGuestsTotal = () => {
-  //   //debuggger;
-  //   var helper = [];
-  //   if (orderDetails === null || orderDetails.length === 0) {
-  //     let guestArr = [...guests];
-  //     let subTotal = 0;
-  //     guestArr.forEach(p => {
-  //       //console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
-
-  //       p.totalAmount = 0;
-  //       p.totalItems = 0;
-  //     });
-  //     setGuests(guestArr);
-  //     let oldOrder = order;
-  //     oldOrder.orderTotal = subTotal;
-  //     oldOrder.tax = 0;
-  //     oldOrder.netTotal = oldOrder.orderTotal + oldOrder.tax;
-  //     setOrder(oldOrder);
-
-  //     return;
-  //   }
-  //   var results = orderDetails.reduce(function(r, o) {
-  //     //console.log(" guest " + o.guestId);
-  //     var key = o.guestSeq;
-  //     let extraCharge = 0;
-  //     o.orderChoices.forEach(oc => {
-  //       extraCharge += oc.extraCharges;
-  //       //console.log("extraCharge " + oc.extraCharge);
-  //     });
-  //     if (!helper[key]) {
-  //       helper[key] = Object.assign(
-  //         {},
-  //         { guestId: o.guestSeq, amount: o.subTotal + extraCharge, qty: o.qty }
-  //       );
-  //       r.push(helper[key]);
-  //     } else {
-  //       helper[key].amount += o.subTotal + extraCharge;
-  //       helper[key].qty += o.qty;
-  //     }
-  //     return r;
-  //   }, []);
-
-  //   let guestArr = [...guests];
-  //   //reset guests index
-  //   guestArr.forEach(p => {
-  //     p.totalAmount = 0;
-  //     p.totalItems = 0;
-  //   });
-  //   let subTotal = 0;
-
-  //   results.forEach(p => {
-  //     //console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
-  //     var guestIndex = getIndex(p.guestId, guests, "guestId");
-  //     if (guestIndex >= 0) {
-  //       subTotal += p.amount;
-  //       guestArr[guestIndex].totalAmount = p.amount;
-  //       guestArr[guestIndex].totalItems = p.qty;
-  //     }
-  //   });
-  //   setGuests(guestArr);
-  //   let oldOrder = order;
-  //   oldOrder.orderTotal = subTotal;
-  //   oldOrder.tax = 0;
-  //   oldOrder.netTotal = oldOrder.orderTotal + oldOrder.tax;
-
-  //   oldOrder.orderDetails = [];
-  //   orderDetails.forEach(od => {
-  //     oldOrder.orderDetails.push(od);
-  //   });
-
-  //   setOrder(oldOrder);
-  //   // console.log(results);
-  // };
-
   const onChangeQty = (
     menuItem,
     guestId,
@@ -556,7 +469,7 @@ export const OrderLanding = props => {
                 component="img"
                 //height="75"
                 className={classes.media}
-                image="https://posigentstorage.blob.core.windows.net/logos/Color%20logo%20with%20background.png"
+                image={myInfo.logoUrl}
                 title=""
               />
             </Box>
@@ -591,7 +504,7 @@ export const OrderLanding = props => {
                   <Avatar
                     variant="square"
                     // className={classes.merlin}
-                    src="https://posigentstorage.blob.core.windows.net/logos/favicon.ico"
+                    src={myInfo.bandUrl}
                   >
                     P
                   </Avatar>

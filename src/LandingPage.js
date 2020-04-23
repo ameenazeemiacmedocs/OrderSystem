@@ -1,18 +1,33 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Typography } from "@material-ui/core";
+import { createMuiTheme } from "@material-ui/core/styles";
+import { ThemeProvider } from "@material-ui/styles";
 import LoadingOverlay from "./common/LoadingOverlay";
 import SuccessOverlay from "./common/SuccessOverlay";
 import { OrderLanding } from "./orderLanding";
 import Container from "@material-ui/core/Container";
 import CheckIcon from "@material-ui/icons/Check";
-import {
-  createMuiTheme,
-  withStyles,
-  makeStyles,
-  ThemeProvider
-} from "@material-ui/core/styles";
+
 export const LandingPage = () => {
+  const [myTheme, setMyTheme] = useState(
+    createMuiTheme({
+      palette: {
+        type: "light",
+        primary: {
+          // Purple and green play nicely together.
+          //  main: "#3f51b5"
+          main: "#3f51b5"
+        },
+        secondary: {
+          // This is green.A700 as hex.
+          // main: "#11cb5f"
+          main: "#FFFFFF"
+        }
+      }
+    })
+  );
+
   const apiURL = "https://raffleapi.azurewebsites.net/api/";
   const [client, setClient] = useState("");
   const [source, setSource] = useState("url");
@@ -113,6 +128,26 @@ export const LandingPage = () => {
     }
   }, [client]);
 
+  useEffect(() => {
+    if (myInfo && myInfo !== null) {
+      console.log(myInfo);
+      if (myInfo.primaryColor && myInfo.secondaryColor) {
+        const newTheme = createMuiTheme({
+          palette: {
+            type: "light",
+            primary: {
+              main: myInfo.primaryColor
+            },
+            secondary: {
+              main: myInfo.secondaryColor
+            }
+          }
+        });
+        setMyTheme(newTheme);
+      }
+    }
+  }, [myInfo]);
+
   const onPaymentSuccess = (orderId, waitTime) => {
     let payment = {
       orderId: orderId,
@@ -125,19 +160,21 @@ export const LandingPage = () => {
   };
   return (
     <div>
-      <LoadingOverlay open={isLoading} title="loading..." />
+      <ThemeProvider theme={myTheme}>
+        <LoadingOverlay open={isLoading} title="loading..." />
 
-      {myInfo !== null && payment === null && (
-        <OrderLanding
-          apiURL={apiURL}
-          client={client}
-          source={source}
-          foodMenu={foodMenu}
-          myInfo={myInfo}
-          onPaymentSuccess={onPaymentSuccess}
-        />
-      )}
-      {payment !== null && <PaymentSuccessPage payment={payment} />}
+        {myInfo !== null && payment === null && (
+          <OrderLanding
+            apiURL={apiURL}
+            client={client}
+            source={source}
+            foodMenu={foodMenu}
+            myInfo={myInfo}
+            onPaymentSuccess={onPaymentSuccess}
+          />
+        )}
+        {payment !== null && <PaymentSuccessPage payment={payment} />}
+      </ThemeProvider>
     </div>
   );
 };
