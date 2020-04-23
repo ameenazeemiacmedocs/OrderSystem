@@ -145,6 +145,7 @@ export const OrderLanding = props => {
       guestName: "Guest 1",
       totalItems: 0,
       totalAmount: 0,
+      tax: 0,
       display: 1
     }
   ]);
@@ -355,6 +356,7 @@ export const OrderLanding = props => {
       guestName: "Guest " + lastDispaly,
       totalItems: 0,
       totalAmount: 0,
+      tax: 0,
       display: lastDispaly
     };
     setGuests(oldGues => [...oldGues, guest]);
@@ -735,6 +737,11 @@ export const OrderLanding = props => {
       ).toString(16)
     );
   }
+  function calculateTax(amount, tax) {
+    if (tax <= 0) return 0;
+
+    return (tax / 100) * amount;
+  }
   function addOrderDetailByGuest(
     guestId,
     menuItem,
@@ -753,7 +760,7 @@ export const OrderLanding = props => {
       productId: menuItem.id,
       product: null,
       rate: menuItem.basePrice,
-      tax: 0.0,
+      tax: menuItem.taxPercentage,
       discount: 0.0,
       qty: 1,
       subTotal: menuItem.basePrice,
@@ -871,6 +878,7 @@ export const OrderLanding = props => {
 
         p.totalAmount = 0;
         p.totalItems = 0;
+        p.tax = 0;
       });
       setGuests(guestArr);
       //let oldOrder = order;
@@ -892,12 +900,18 @@ export const OrderLanding = props => {
       if (!helper[key]) {
         helper[key] = Object.assign(
           {},
-          { guestId: o.guestSeq, amount: o.subTotal + extraCharge, qty: o.qty }
+          {
+            guestId: o.guestSeq,
+            amount: o.subTotal + extraCharge,
+            qty: o.qty,
+            tax: calculateTax(o.subTotal + extraCharge, o.tax)
+          }
         );
         r.push(helper[key]);
       } else {
         helper[key].amount += o.subTotal + extraCharge;
         helper[key].qty += o.qty;
+        helper[key].tax += calculateTax(helper[key], o.tax);
       }
       return r;
     }, []);
@@ -910,11 +924,13 @@ export const OrderLanding = props => {
     });
     let subTotal = 0;
 
+    let tax = 0;
     results.forEach(p => {
       //console.log(p.guestId + " qty " + p.qty + " amount " + p.amount);
       var guestIndex = getIndex(p.guestId, guests, "guestId");
       if (guestIndex >= 0) {
         subTotal += p.amount;
+        tax += p.tax;
         guestArr[guestIndex].totalAmount = p.amount;
         guestArr[guestIndex].totalItems = p.qty;
       }
@@ -922,7 +938,7 @@ export const OrderLanding = props => {
     setGuests(guestArr);
     // let oldOrder = order;
     oldOrder.orderTotal = subTotal;
-    oldOrder.tax = 0;
+    oldOrder.tax = tax;
     oldOrder.netTotal = oldOrder.orderTotal + oldOrder.tax;
 
     // oldOrder.orderDetails = [];
