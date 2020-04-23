@@ -82,6 +82,7 @@ export const FoodItems = props => {
       setShowExtras(false);
       setOpen(false);
     } else if (props.orderQty > 0) {
+      console.log(props.orderDetails);
       if (!showExtras) {
         setShowExtras(true);
         setOpen(true);

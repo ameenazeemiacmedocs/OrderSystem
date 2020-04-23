@@ -298,6 +298,10 @@ const RadioChoiceGroup = ({
     });
   }
 
+  if (ordSelected === null && selected === null) {
+    handleSelection(choices[0]);
+  }
+
   const choiceList = choices.map(choice => {
     return (
       <RadioChoice
