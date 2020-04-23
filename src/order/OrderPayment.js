@@ -75,7 +75,7 @@ export const OrderTotals = props => {
             </Grid>
             <Grid item>
               <TextField
-                label="Tax @ 5.86%"
+                label="Tax"
                 //variant="outlined"
                 size="small"
                 variant="outlined"
