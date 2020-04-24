@@ -458,7 +458,7 @@ export const OrderLanding = props => {
   return (
     <div className={classes.root}>
       {/* <Container disableGutters="false" maxWidth="xs"> */}
-      <Container disableGutters="false" maxWidth="xs">
+      <Container disableGutters="false" maxWidth="md">
         <LoadingOverlay open={isLoading} title="Processing Payment.." />
 
         {/* <AppBar color="transparent" position="sticky"> */}

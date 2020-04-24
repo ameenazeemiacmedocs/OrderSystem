@@ -104,7 +104,7 @@ export const MenuChoices = props => {
       );
       console.log("rd usman " + prevChoice.fullName + " index " + props.index);
     }
-    console.log("rd usman " + newChoice.fullName);
+    // console.log("rd usman " + newChoice.fullName);
 
     props.onChangeQty(
       props.menuItem,

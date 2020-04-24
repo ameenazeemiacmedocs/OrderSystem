@@ -17,12 +17,12 @@ export const LandingPage = () => {
         primary: {
           // Purple and green play nicely together.
           //  main: "#3f51b5"
-          main: "#3f51b5"
+          main: "#2196f3"
         },
         secondary: {
           // This is green.A700 as hex.
           // main: "#11cb5f"
-          main: "#FFFFFF"
+          main: "#f50057"
         }
       }
     })
