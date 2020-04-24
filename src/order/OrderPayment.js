@@ -37,7 +37,7 @@ export const OrderPayment = props => {
             {/* // <Elements stripe={stripePromise}> */}
             <Grid container spacing={1} justify="flex-start">
               <SplitForm
-                totalAmount={order != null && order.netTotal}
+                totalAmount={order != null && Number(order.netTotal).toFixed(2)}
                 onPayment={props.onPayment}
                 isValid={props.isValid}
               />

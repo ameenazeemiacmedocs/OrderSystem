@@ -130,7 +130,6 @@ export const LandingPage = () => {
 
   useEffect(() => {
     if (myInfo && myInfo !== null) {
-      console.log(myInfo);
       if (myInfo.primaryColor && myInfo.secondaryColor) {
         const newTheme = createMuiTheme({
           palette: {

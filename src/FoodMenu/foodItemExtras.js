@@ -348,6 +348,7 @@ export const RadioChoice = props => {
                   ? props.selected.fullName === props.itemDetail.fullName
                   : false
               }
+              // checked={true}
               onChange={event => props.handleChange(props.itemDetail)}
               value={props.itemDetail.fullName}
               name="radio-button-choice"
