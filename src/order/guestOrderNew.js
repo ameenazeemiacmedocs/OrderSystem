@@ -173,7 +173,7 @@ export const GuestOrder = props => {
         //aria-labelledby="nested-list-subheader"
         className={classes.root}
       >
-        <Box bgcolor="primary.main" border="1" color="primary.contrastText">
+        <Box bgcolor="secondary.main" border="1" color="primary.contrastText">
           <ListItem
             key={props.guestId}
             button

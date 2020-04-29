@@ -458,7 +458,7 @@ export const OrderLanding = props => {
   return (
     <div className={classes.root}>
       {/* <Container disableGutters="false" maxWidth="xs"> */}
-      <Container disableGutters="false" maxWidth="md">
+      <Container disableGutters="false" maxWidth="xs">
         <LoadingOverlay open={isLoading} title="Processing Payment.." />
 
         {/* <AppBar color="transparent" position="sticky"> */}
@@ -474,23 +474,28 @@ export const OrderLanding = props => {
               />
             </Box>
             <Box
-              color="primary.main"
+              color="secondary.main"
               //fontWeight={500}
               // fontSize="h6.fontSize"
               textAlign="left"
+              fontSize={16}
               m={1}
             >
               Your order will be delivered between 7:15 and 7:45
             </Box>
             <Box p={0} m={1} color="primary.main">
-              <Grid container alignItems="center" spacing={5}>
+              <Grid container alignItems="center" spacing={1}>
                 <Grid item xs={2}>
-                  <Avatar variant="square" className={classes.merlin}>
-                    Cl
+                  <Avatar
+                    variant="square"
+                    src={myInfo.merlinLogoUrl}
+                    className={classes.merlin}
+                  >
+                    M
                   </Avatar>
                 </Grid>
                 <Grid item xs={10}>
-                  Welcome, this is how you order
+                  Welcome! This is how your order
                 </Grid>
               </Grid>
             </Box>

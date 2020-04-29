@@ -21,22 +21,32 @@ const useStyles = makeStyles(theme => ({
   root: {
     width: "100%"
   },
+  primary: { paddingLeft: theme.spacing(1), marginRight: theme.spacing(6) },
   nested: {
-    paddingLeft: theme.spacing(5)
+    paddingLeft: theme.spacing(3)
     //[theme.breakpoints.down("xs")]: {
     //  padding: "10px"
-    //}
+    //},
+  },
+  secondaryAction: {
+    right: 0
+    // marginLeft: theme.spacing(10)
   },
   foodItemDescription: {
     display: "flex",
-    [theme.breakpoints.down("xs")]: {
-      maxWidth: "8em"
-    }
+    paddingLeft: theme.spacing(2)
+    // [theme.breakpoints.down("xs")]: {
+    //   maxWidth: "8em"
+    //}
   },
   quantityItemPanelCard: {
     width: "100%",
     padding: "5px",
     textAlign: "center"
+  },
+  large: {
+    width: theme.spacing(10),
+    height: theme.spacing(10)
   },
   quantityAvatar: {
     fontSize: "16px",
@@ -120,11 +130,22 @@ export const FoodItems = props => {
         {/* {open ? <ExpandLess /> : <ExpandMore />} */}
         <ListItemAvatar>
           <Avatar
+            variant="square"
             alt={props.menuItem.fullName}
             src={props.menuItem.smallImageUrl}
+            className={classes.large}
           />
         </ListItemAvatar>
-        <ListItemText key={props.prodId}>
+        <ListItemText
+          classes={{ primary: classes.primary, secondary: classes.primary }}
+          key={props.prodId}
+          primary={
+            props.menuItem.fullName + " ($" + props.menuItem.basePrice + ")"
+          }
+          secondary={props.menuItem.description}
+          //classes={{primary:theme.spacing(2)}}
+        />
+        {/* <ListItemText key={props.prodId} >
           <div className={classes.foodItemDescription}>
             <p
               style={{
@@ -137,14 +158,12 @@ export const FoodItems = props => {
                 (&#36;{props.menuItem.basePrice})
               </span>
             </p>
-            {/* <p style={{ flex: 1, justifyContent: "flex-start" }}>
-              (&#36; {props.menuItem.basePrice})
-            </p> */}
+           
           </div>
-        </ListItemText>
+        </ListItemText> */}
         {/* {open ? <ExpandLess /> : <ExpandMore />} */}
 
-        <ListItemSecondaryAction>
+        <ListItemSecondaryAction classes={{ root: classes.secondaryAction }}>
           <QuantitySelecter
             value={props.orderQty}
             handleAdd={handleAdd}

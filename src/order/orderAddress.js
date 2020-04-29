@@ -58,8 +58,8 @@ export const OrderAddress = props => {
       <Paper square>
         <Tabs
           value={deliveryType}
-          indicatorColor="primary"
-          textColor="primary"
+          indicatorColor="secondary"
+          textColor="secondary"
           onChange={handleChange}
           //centered="false"
           variant="fullWidth"

@@ -36,8 +36,8 @@ export const OrderPayment = props => {
         <div>
           <Tabs
             value={0}
-            indicatorColor="primary"
-            textColor="primary"
+            indicatorColor="secondary"
+            textColor="secondary"
             //onChange={handleChange}
             //centered="false"
             variant="fullWidth"
