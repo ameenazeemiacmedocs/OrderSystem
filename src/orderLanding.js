@@ -661,6 +661,7 @@ export const OrderLanding = props => {
     isAdded,
     otherChargesSeq
   ) {
+    debugger;
     //debuggger;
     if (!isAdded) return;
 

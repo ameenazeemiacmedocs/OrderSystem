@@ -14,7 +14,9 @@ import {
   Collapse,
   Paper,
   ListItemSecondaryAction,
-  Chip
+  Chip,
+  Tab,
+  Tabs
 } from "@material-ui/core";
 
 import {
@@ -31,21 +33,35 @@ export const OrderPayment = props => {
   return (
     <div>
       {order !== null && order.netTotal > 0 && (
-        <Card raised={true}>
-          <CardHeader title="Payment Information" />
-          <CardContent>
-            {/* // <Elements stripe={stripePromise}> */}
-            <Grid container spacing={1} justify="flex-start">
-              <SplitForm
-                totalAmount={order != null && Number(order.netTotal).toFixed(2)}
-                onPayment={props.onPayment}
-                isValid={props.isValid}
-              />
-            </Grid>
-            {/* <ElementDemos demos={demos} /> */}
-            {/* </Elements> */}
-          </CardContent>
-        </Card>
+        <div>
+          <Tabs
+            value={0}
+            indicatorColor="primary"
+            textColor="primary"
+            //onChange={handleChange}
+            //centered="false"
+            variant="fullWidth"
+          >
+            <Tab label="Payment Information" />
+          </Tabs>
+          <Card raised={true}>
+            {/* <CardHeader title="Payment Information" /> */}
+            <CardContent>
+              {/* // <Elements stripe={stripePromise}> */}
+              <Grid container spacing={1} justify="flex-start">
+                <SplitForm
+                  totalAmount={
+                    order != null && Number(order.netTotal).toFixed(2)
+                  }
+                  onPayment={props.onPayment}
+                  isValid={props.isValid}
+                />
+              </Grid>
+              {/* <ElementDemos demos={demos} /> */}
+              {/* </Elements> */}
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );

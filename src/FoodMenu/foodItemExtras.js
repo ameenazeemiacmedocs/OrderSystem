@@ -298,7 +298,8 @@ const RadioChoiceGroup = ({
     });
   }
 
-  if (ordSelected === null && selected === null) {
+  if (ordSelected === null && selected === null && choices.length > 0) {
+    debugger;
     handleSelection(choices[0]);
   }
 
