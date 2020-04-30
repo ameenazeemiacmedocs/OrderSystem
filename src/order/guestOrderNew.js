@@ -51,6 +51,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     width: "100%",
     marginBottom: 5
+    //fontSize: '5rem',
   },
 
   heading: {
@@ -188,9 +189,8 @@ export const GuestOrder = props => {
                     e.stopPropagation();
                     setShowNameEditor(true);
                   }}
-                >
-                  {props.guestName}
-                </ListItemText>
+                  primary={props.guestName}
+                />
               </div>
               {/* <ListItemText primary={props.guestName} /> */}
               <div className={classes.guestItemRight}>

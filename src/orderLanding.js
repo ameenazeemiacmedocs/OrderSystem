@@ -69,6 +69,14 @@ const useStyles = makeStyles(theme => ({
   title: {
     flexGrow: 1
   },
+  AppBarpositionSticky: {
+    // ⚠️ sticky is not supported by IE 11.
+    // position: "sticky",
+    //top:0,
+    //left: 0,
+    //marginLeft:theme.spacing(-1),
+    //right: theme.spacing(5)
+  },
   large: {
     width: theme.spacing(7),
     height: theme.spacing(7)
@@ -458,7 +466,7 @@ export const OrderLanding = props => {
   return (
     <div className={classes.root}>
       {/* <Container disableGutters="false" maxWidth="xs"> */}
-      <Container disableGutters="false" maxWidth="xs">
+      <Container disableGutters maxWidth="xs">
         <LoadingOverlay open={isLoading} title="Processing Payment.." />
 
         {/* <AppBar color="transparent" position="sticky"> */}
@@ -475,15 +483,23 @@ export const OrderLanding = props => {
             </Box>
             <Box
               color="secondary.main"
+              //fontFamily="GothamRounded"
               //fontWeight={500}
               // fontSize="h6.fontSize"
               textAlign="left"
-              fontSize={16}
+              fontSize={18}
+              fontWeight={400}
               m={1}
             >
               Your order will be delivered between 7:15 and 7:45
             </Box>
-            <Box p={0} m={1} color="primary.main">
+            <Box
+              p={0}
+              m={1}
+              color="primary.main"
+              fontSize={18}
+              fontWeight="300"
+            >
               <Grid container alignItems="center" spacing={1}>
                 <Grid item xs={2}>
                   <Avatar
@@ -502,8 +518,18 @@ export const OrderLanding = props => {
           </Box>
         ) : (
           // <ElevationScroll {...props}>
-          <AppBar position="sticky" color="default">
-            <Box p={0} m={1} color="primary.main">
+          <AppBar
+            position="sticky"
+            color="default"
+            classes={{ positionSticky: classes.AppBarpositionSticky }}
+          >
+            <Box
+              p={0}
+              m={1}
+              color="primary.main"
+              fontSize={18}
+              fontWeight={400}
+            >
               <Grid container alignItems="center" spacing={5}>
                 <Grid item xs={2}>
                   <Avatar

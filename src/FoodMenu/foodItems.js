@@ -55,10 +55,10 @@ const useStyles = makeStyles(theme => ({
     background: "lightgreen"
   },
   extrasHeaderText: {
-    fontSize: "11pt",
-    [theme.breakpoints.down("xs")]: {
-      fontSize: "9pt"
-    }
+    //fontSize: "14pt"
+    // [theme.breakpoints.down("xs")]: {
+    //   fontSize: "9pt"
+    // }
   },
   expandPanelCard: {
     marginLeft: theme.spacing(3),
@@ -124,8 +124,9 @@ export const FoodItems = props => {
       <ListItem
         key={props.menuItem.id}
         className={classes.nested}
-        button={showExtras ? hasExtras : null}
-        onClick={showExtras ? (hasExtras ? handleClick : null) : null}
+        button
+        //button={showExtras ? hasExtras : null}
+        //onClick={showExtras ? (hasExtras ? handleClick : null) : null}
       >
         {/* {open ? <ExpandLess /> : <ExpandMore />} */}
         <ListItemAvatar>
@@ -240,7 +241,7 @@ const ExtraItemsExpandable = props => {
               anchorOrigin={{ vertical: "top", horizontal: "left" }}
             >
               <Typography className={classes.extrasHeaderText}>
-                {props.menuItem.fullName} (Choices)
+                Personalize your Order
               </Typography>
             </StyledBadge>
           </div>

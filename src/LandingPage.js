@@ -8,10 +8,31 @@ import SuccessOverlay from "./common/SuccessOverlay";
 import { OrderLanding } from "./orderLanding";
 import Container from "@material-ui/core/Container";
 import CheckIcon from "@material-ui/icons/Check";
+import { TextField } from "@material-ui/core";
 
 export const LandingPage = () => {
   const [myTheme, setMyTheme] = useState(
     createMuiTheme({
+      typography: {
+        fontFamily: ["Nunito Sans"].join(","),
+        fontSize: 14,
+        fontWeightLight: "300",
+        fontWeightRegular: "400",
+        button: {
+          fontWeight: "bold",
+          fontSize: "0.8rem"
+        }
+
+        //  ListItemText: { fontSize: "10rem" }
+        //MuiListItemText-root: { fontSize: "5rem," }
+      },
+      props: {
+        MuiTextField: { color: "secondary", size: "small" },
+        MuiTabs: { textColor: "secondary", indicatorColor: "secondary" }
+      },
+      overrides: {
+        TextField: {}
+      },
       palette: {
         type: "light",
         primary: {
@@ -131,18 +152,22 @@ export const LandingPage = () => {
   useEffect(() => {
     if (myInfo && myInfo !== null) {
       if (myInfo.primaryColor && myInfo.secondaryColor) {
-        const newTheme = createMuiTheme({
-          palette: {
-            type: "light",
-            primary: {
-              main: myInfo.primaryColor
-            },
-            secondary: {
-              main: myInfo.secondaryColor
-            }
-          }
-        });
-        setMyTheme(newTheme);
+        let myThemeNew = { ...myTheme };
+        myThemeNew.palette.primary.main = myInfo.primaryColor;
+        myThemeNew.palette.secondary.main = myInfo.secondaryColor;
+        // const newTheme = createMuiTheme({
+        //   palette: {
+        //     type: "light",
+        //     primary: {
+        //       main: myInfo.primaryColor
+        //     },
+        //     secondary: {
+        //       main: myInfo.secondaryColor
+        //     }
+        //   },
+
+        // });
+        setMyTheme(myThemeNew);
       }
     }
   }, [myInfo]);

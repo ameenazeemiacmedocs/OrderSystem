@@ -26,12 +26,13 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: "10px",
     color: "white",
     fontStyle: "italic",
-    background:
-      "linear-gradient(90deg, " +
-      colors.indigo[400] +
-      ", 30%, " +
-      colors.indigo[100] +
-      " 90%)"
+    background: theme.palette.primary.main
+    // background:
+    //   "linear-gradient(90deg, " +
+    //   colors.indigo[400] +
+    //   ", 30%, " +
+    //   colors.indigo[100] +
+    //   " 90%)"
   },
   subHeaderCard: {
     marginLeft: theme.spacing(7),

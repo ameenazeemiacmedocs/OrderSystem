@@ -34,7 +34,10 @@ export const FoodArea = props => {
 
   const getQty = (menuItem, guestId) => {
     var isFound = props.orderDetails.find(orderDetail => {
-      return orderDetail.productId === menuItem.id && orderDetail.guestSeq === guestId;
+      return (
+        orderDetail.productId === menuItem.id &&
+        orderDetail.guestSeq === guestId
+      );
     });
     if (isFound) {
       areaQty += isFound.qty;
@@ -55,6 +58,7 @@ export const FoodArea = props => {
   return (
     <div className={classes.root}>
       <ListItem
+        //disableTypography={true}
         key={props.area.id}
         button
         onClick={handleClick}

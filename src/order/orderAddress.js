@@ -59,8 +59,8 @@ export const OrderAddress = props => {
       <Paper square>
         <Tabs
           value={deliveryType}
-          indicatorColor="secondary"
-          textColor="secondary"
+          //indicatorColor="secondary"
+          //textColor="secondary"
           onChange={handleChange}
           //centered="false"
           variant="fullWidth"
@@ -79,7 +79,6 @@ export const OrderAddress = props => {
                 <TextField
                   label="Name"
                   fullWidth
-                  color="secondary"
                   required
                   error={address.name === ""}
                   variant="outlined"
