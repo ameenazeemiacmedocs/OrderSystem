@@ -16,6 +16,7 @@ export const OrderAddress = props => {
   const [deliveryType, setDeliveryType] = useState(0);
   const handleChange = (event, newValue) => {
     setDeliveryType(newValue);
+    console.log(newValue);
   };
   // useEffect(() => {
   //     console.log("address " + address);
@@ -66,7 +67,7 @@ export const OrderAddress = props => {
         >
           <Tab label="Delivery Address" />
 
-          {/* <Tab label="Take Away" /> */}
+          <Tab label="Take Away" />
         </Tabs>
       </Paper>
       {address !== null && address !== undefined && deliveryType === 0 && (
@@ -74,10 +75,11 @@ export const OrderAddress = props => {
           {/* <CardHeader title="Delivery Address" /> */}
           <CardContent>
             <Grid container spacing={1} justify="flex-start">
-              <Grid item xs="8">
+              <Grid item xm="8" xs="12">
                 <TextField
                   label="Name"
                   fullWidth
+                  color="secondary"
                   required
                   error={address.name === ""}
                   variant="outlined"
@@ -86,7 +88,7 @@ export const OrderAddress = props => {
                   onChange={addressHandleChange("name")}
                 />
               </Grid>
-              <Grid item xs="4">
+              <Grid item xm="4" xs="12">
                 <MaterialUiPhoneNumber
                   required={false}
                   defaultCountry="us"
@@ -97,10 +99,10 @@ export const OrderAddress = props => {
                   //   minLength: 17,
                   // }}
 
-                  error={
-                    address.mobileNumber === "" ||
-                    address.mobileNumber.length < 10
-                  }
+                  // error={
+                  //   address.mobileNumber === "" ||
+                  //   address.mobileNumber.length < 10
+                  // }
                   fullWidth
                   // onKeyPress={(event) => handleKeyPress(event)}
                   label="Phone Number"
@@ -125,7 +127,7 @@ export const OrderAddress = props => {
                 <TextField
                   label="Address"
                   fullWidth
-                  //required
+                  required={deliveryType === 0}
                   variant="outlined"
                   multiline="true"
                   row="4"
