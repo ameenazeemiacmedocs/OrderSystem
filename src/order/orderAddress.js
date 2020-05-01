@@ -12,15 +12,22 @@ import {
 } from "@material-ui/core";
 
 export const OrderAddress = props => {
-  const { address, onAddressChange } = props;
+  const {
+    address,
+    onAddressChange,
+    onDeliveryTypeChange,
+    addressError
+  } = props;
   const [deliveryType, setDeliveryType] = useState(0);
   const handleChange = (event, newValue) => {
     setDeliveryType(newValue);
+    onDeliveryTypeChange(newValue);
     console.log(newValue);
   };
-  // useEffect(() => {
-  //     console.log("address " + address);
-  // }, [address]);
+  useEffect(() => {
+    console.log("Order Type " + props.orderType);
+    setDeliveryType(props.orderType);
+  }, [props.orderType]);
 
   const addressHandleChange = name => event => {
     if (name === "mobileNumber") {
@@ -80,7 +87,7 @@ export const OrderAddress = props => {
                   label="Name"
                   fullWidth
                   required
-                  //error={address.name === ""}
+                  error={addressError.name}
                   variant="outlined"
                   value={address.name}
                   InputLabelProps={{ shrink: true }}
@@ -95,6 +102,7 @@ export const OrderAddress = props => {
                   name="MobileNumber"
                   onlyCountries={["us"]}
                   onChange={addressHandleChange("mobileNumber")}
+                  error={addressError.mobileNumber}
                   // inputProps={{
                   //   minLength: 17,
                   // }}
@@ -117,9 +125,11 @@ export const OrderAddress = props => {
                     fullWidth
                     required={deliveryType === 0}
                     variant="outlined"
-                    multiline="true"
+                    multiline
                     row="4"
+                    mobileNumber
                     InputLabelProps={{ shrink: true }}
+                    error={addressError.address}
                     value={address.address}
                     onChange={addressHandleChange("address")}
                   />
@@ -132,6 +142,7 @@ export const OrderAddress = props => {
                     InputLabelProps={{ shrink: true }}
                     fullWidth
                     required={deliveryType === 0}
+                    error={addressError.city}
                     //required
                     variant="outlined"
                     value={address.city}
@@ -149,6 +160,7 @@ export const OrderAddress = props => {
                     //required
                     variant="outlined"
                     value={address.state}
+                    error={addressError.state}
                     onChange={addressHandleChange("state")}
                   />
                 </Grid>
@@ -162,6 +174,7 @@ export const OrderAddress = props => {
                     required={deliveryType === 0}
                     variant="outlined"
                     value={address.zipCode}
+                    error={addressError.zipCode}
                     onChange={addressHandleChange("zipCode")}
                   />
                 </Grid>

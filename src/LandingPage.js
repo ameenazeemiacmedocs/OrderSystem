@@ -51,6 +51,7 @@ export const LandingPage = () => {
     })
   );
 
+  // const apiURL = "https://localhost:44363/api/";
   const apiURL = "https://raffleapi.azurewebsites.net/api/";
   const [client, setClient] = useState("");
   const [source, setSource] = useState("url");
@@ -58,6 +59,7 @@ export const LandingPage = () => {
   const [myInfo, setMyInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [defaultOrder, setDefOrder] = useState(null);
+  const [pmethods, setPmethods] = useState(null);
   //const [paymentSuccessfull,setPaymentSuccessfull]=useState(false);
   const [payment, setPayment] = useState(
     null
@@ -90,16 +92,19 @@ export const LandingPage = () => {
         setClient(clientParam);
       }
       var clientSource = getParameterByName("s");
-
+      console.log(clientSource);
       if (clientSource === "" || clientSource === null) {
         setSource("URL");
+      } else {
+        setSource(clientSource);
       }
     }
 
     if (foodMenu == null && client !== "") {
       axios.defaults.headers.common["CLIENT_CODE"] = client;
       var formData = new FormData();
-      formData.append("source", clientSource);
+      formData.append("source", source);
+      console.log(clientSource);
       // axios.post(`${apiURL}orders/defaultOrder`, formData, {
       //   headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
       // }).then(result => {
@@ -109,7 +114,7 @@ export const LandingPage = () => {
       //   .catch(error => {
       //     console.error(error);
       //   });
-
+      console.log(formData);
       setIsLoading(true);
 
       console.log("main demo");
@@ -140,7 +145,10 @@ export const LandingPage = () => {
             setFoodMenus(responses[0].data);
             // console.log(responses[1]);
             setMyInfo(responses[1].data);
-            setDefOrder(responses[2].data);
+
+            setDefOrder(responses[2].data.order);
+            setPmethods(responses[2].data.paymentMethods);
+            //console.log("my order" + responses[2].data);
             setIsLoading(false);
           })
         )
@@ -188,7 +196,8 @@ export const LandingPage = () => {
       orderId: orderId,
       waitTime: waitTime,
       sucessMessage:
-        "Thank you for your order! We will keep you informed of your order status through text messaging."
+        "Thank you for your order! We will keep you informed of your order status through text messaging.\nYour Order# is " +
+        orderId
     };
 
     setPayment(payment);
@@ -205,6 +214,7 @@ export const LandingPage = () => {
             source={source}
             foodMenu={foodMenu}
             myInfo={myInfo}
+            pMethods={pmethods}
             defaultOrder={defaultOrder}
             onPaymentSuccess={onPaymentSuccess}
           />

@@ -19,8 +19,11 @@ import {
   Button,
   Box,
   TextField,
-  InputAdornment
+  InputAdornment,
+  FormControlLabel
 } from "@material-ui/core";
+
+import Switch from "@material-ui/core/Switch";
 import useResponsiveFontSize from "./useResponsiveFontSize";
 import { flexbox } from "@material-ui/system";
 const useStyles = makeStyles(theme => ({
@@ -74,6 +77,7 @@ const SplitForm = props => {
   const stripe = useStripe();
   const elements = useElements();
   const options = useOptions();
+  const [saveCC, setSaveCC] = React.useState(false);
   const [isFormSubmit, setIsFormSubmit] = React.useState(false);
 
   const [cardNumber, setCardNumber] = React.useState({
@@ -94,7 +98,10 @@ const SplitForm = props => {
     empty: false,
     complete: false
   });
-
+  const onChangeSaveCard = event => {
+    //setState({ ...state, [event.target.name]: event.target.checked });
+    setSaveCC(event.target.checked);
+  };
   const onElementChange = event => {
     // console.log("Event " + event.error.message);
 
@@ -151,7 +158,7 @@ const SplitForm = props => {
     };
 
     //alert("Payment is valid");
-    props.onPayment(paymethod);
+    props.onPayment(paymethod, saveCC);
 
     // try {
     //   const checkout = {
@@ -234,6 +241,19 @@ const SplitForm = props => {
             error={ccv.error}
             labelErrorMessage={ccv.error}
             onChange={onElementChange}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={saveCC}
+                onChange={onChangeSaveCard}
+                name="checkedB"
+                color="secondary"
+              />
+            }
+            label="Save for future payments"
           />
         </Grid>
         <Grid item xs={12}>

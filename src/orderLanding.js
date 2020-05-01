@@ -32,7 +32,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Container
+  Container,
+  Fade
 } from "@material-ui/core";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -48,6 +49,7 @@ import { foodMenus } from "./data";
 // import { FoodArea } from "./food";
 import { FoodArea } from "./FoodMenu";
 import LoadingOverlay from "./common/LoadingOverlay";
+import AlertDialog from "./common/AlertDialog";
 
 import Slide from "@material-ui/core/Slide";
 
@@ -139,8 +141,24 @@ export const OrderLanding = props => {
 
   const stripe = useStripe();
   const elements = useElements();
-  const { apiURL, client, source, foodMenu, myInfo, onPaymentSuccess } = props;
+  const {
+    apiURL,
+    client,
+    source,
+    foodMenu,
+    myInfo,
+    onPaymentSuccess,
+    defaultOrder,
+    pMethods
+  } = props;
   const classes = useStyles();
+  const [alertDialog, setAlertDialog] = useState({
+    show: false,
+    title: "",
+    text: "",
+    variant: "info"
+  });
+
   //const apiURL = "https://raffleapi.azurewebsites.net/api/";
   //const [client, setClient] = useState("");
   //const [sourceource, setSource] = useState("url");
@@ -162,7 +180,15 @@ export const OrderLanding = props => {
   const [guestOpen, setGuestOpen] = React.useState([
     { guestId: "1", isOpen: true }
   ]);
-  const [deliveryType, setDeliveryType] = useState(0);
+  const [addressError, setAddressError] = useState({
+    name: false,
+    mobileNumber: false,
+    address: false,
+    state: false,
+    city: false,
+    zipCode: false
+  });
+
   const onGuestHandleClick = guestId => {
     console.log("Handler Click " + guestId);
     let newArr = [...guestOpen];
@@ -236,7 +262,7 @@ export const OrderLanding = props => {
   });
 
   const [clientSecret, setClientSecret] = useState("");
-  const [defOrder, setDefOrder] = useState(null);
+
   const [isLoading, setIsLoading] = useState(false);
   function getParameterByName(name, url) {
     if (!url) url = window.location.href;
@@ -248,8 +274,13 @@ export const OrderLanding = props => {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
   }
   useEffect(() => {
-    console.log(trigger);
-  }, [trigger]);
+    console.log("Default Order");
+
+    let dOrder = { ...defaultOrder };
+    dOrder.orderDetails = [];
+    setOrder(dOrder);
+    setDeliveryAddress(dOrder.orderDeliverAddress);
+  }, [defaultOrder]);
 
   const onChangeQty = (
     menuItem,
@@ -288,9 +319,6 @@ export const OrderLanding = props => {
       { guestId: lastDispaly, isOpen: false }
     ]);
   };
-  const onDeliveryTypeChange = value => {
-    setDeliveryType(value);
-  };
 
   const callStripe = (clientSecret, payment_method) => {
     return new Promise((resolve, reject) => {
@@ -320,16 +348,53 @@ export const OrderLanding = props => {
     });
   };
 
-  const getClientOrderSecret = orderId => {
+  const updatePaymentStatus = (orderId, isSuccess, paymentRef) => {
     return new Promise((resolve, reject) => {
-      const checkout = {
-        MobileNumber: deliveryAddress.mobileNumber,
-        Amount: order.netTotal,
-        OrderNumber: orderId
+      const paymentStatus = {
+        id: orderId,
+        isSuccess: isSuccess,
+        paymentRef: paymentRef
+      };
+      axios
+        .put(`${apiURL}orders/OrderStatus`, paymentStatus, {
+          headers: {
+            "content-type": "application/json",
+            CLIENT_CODE: client
+          }
+        })
+        .then(response => {
+          // setClientSecret(response);
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+          //alert("Error on Processing order.");
+        });
+    });
+  };
+
+  const getClientOrderSecret = (orderId, isSaveCard) => {
+    return new Promise((resolve, reject) => {
+      // const checkout = {
+      //   MobileNumber: deliveryAddress.mobileNumber,
+      //   Amount: order.netTotal,
+      //   OrderNumber: orderId
+      // };
+
+      const saveCheckout = {
+        amount: order.netTotal,
+        orderNumber: orderId,
+        name: deliveryAddress.name,
+        mobileNumber: deliveryAddress.mobileNumber,
+        address: deliveryAddress.address,
+        state: deliveryAddress.state,
+        city: deliveryAddress.city,
+        zipCode: deliveryAddress.zipCode,
+        saveCard: isSaveCard
       };
 
       axios
-        .post(`${apiURL}orders/checkout`, checkout, {
+        .post(`${apiURL}orders/checkoutsaveCard`, saveCheckout, {
           headers: {
             "content-type": "application/json",
             CLIENT_CODE: client
@@ -354,8 +419,19 @@ export const OrderLanding = props => {
 
     // }
   };
-  const onPayment = async payment_method => {
+
+  const onPayment = async (payment_method, isSaveCC) => {
     debugger;
+    //TODO:need to chagne with Merlin Error
+    if (!isAddressValid()) {
+      // alert("Please fill address Fields");
+      ShowAlert(
+        "error",
+        "Address Required",
+        "Please provide required address information."
+      );
+      return;
+    }
     setIsLoading(true);
     let newOrder = { ...order };
     newOrder.orderDeliverAddress = deliveryAddress;
@@ -367,47 +443,79 @@ export const OrderLanding = props => {
         //setOrder(response.data);
         //setIsOrderSaved(true);
         if (clientSecret === "") {
-          getClientOrderSecret(response.data.id)
+          getClientOrderSecret(response.data.orderNo, isSaveCC)
             .then(successSecret => {
               payment_method.billing_details = { name: deliveryAddress.name };
               callStripe(successSecret.data, payment_method)
                 .then(stripeSuccess => {
                   setIsLoading(false);
-                  onPaymentSuccess(response.data.id, "");
+                  updatePaymentStatus(response.data.id, true, stripeSuccess.id)
+                    .then(sucessStatus => {
+                      onPaymentSuccess(response.data.orderNo, "");
+                    })
+                    .catch(error => {
+                      ShowAlert(
+                        "error",
+                        "Payment",
+                        "We are having Issue to process Payment. Please contact with resturant with Order Id " +
+                          response.data.id
+                      );
+                    });
+
                   //  debugger;
                   //console.log("Stripe intent " + stripeSuccess);
                 })
                 .catch(stripeError => {
+                  updatePaymentStatus(response.data.id, true, stripeError);
                   console.log(stripeError);
-                  alert("Error on Stripe " + stripeError);
+                  // alert("Error on Stripe " + stripeError);
+                  ShowAlert(
+                    "error",
+                    "Stripe Error",
+                    "Error on Stripe " + stripeError
+                  );
                   setOrder(response.data);
                   setClientSecret(successSecret.data);
                 });
             })
             .catch(errorSecret => {
               console.log(errorSecret);
-              alert("Error on Accessing Client Secrets.");
+              // alert("Error on Accessing Client Secrets.");
+              ShowAlert(
+                "error",
+                "Client Info Error",
+                "Error on Accessing Client Secrets."
+              );
             });
         } // enf of client secret // if have client secret
         else {
           payment_method.billing_details = { name: deliveryAddress.name };
           callStripe(clientSecret, payment_method)
             .then(stripeSuccess => {
-              setIsLoading(false);
-              onPaymentSuccess(response.data.id, "");
+              onPaymentSuccess(response.data.orderNo, "");
               //  debugger;
               //console.log("Stripe intent " + stripeSuccess);
             })
             .catch(stripeError => {
               console.log(stripeError);
-              alert("Error on Stripe " + stripeError);
+              // alert("Error on Stripe " + stripeError);
+              ShowAlert(
+                "error",
+                "Stripe Error",
+                "Error on Stripe " + stripeError
+              );
             });
         }
 
         //  let stripeResult = callStripe(secret, payment_method);
       })
       .catch(error => {
-        alert("Some Error Occured to process order.");
+        // alert("Some Error Occured to process order.");
+        ShowAlert(
+          "error",
+          "Order Processing Error",
+          "Error occured while processing your order."
+        );
       });
   };
 
@@ -423,48 +531,101 @@ export const OrderLanding = props => {
     setGuests(guestArr);
   };
   const onAddressChange = (fieldName, fieldValue) => {
-    // console.log("Field " + fieldName + " value " + fieldValue);
-    //console.log({...deliveryAddress});
-    // let address=deliveryAddress;
-    // console.log("address value of name "+address.name);
-    // //setDeliveryAddress(...deliveryAddress,[fieldName],fieldValue);
-    //    // let newOrder=order;
-
-    //     if(fieldName==="name")
-    //     {
-    //       address.name=fieldValue;
-    //     }
-    //     else if(fieldName==="mobileNumber")
-    //     {
-    //       address.mobileNumber=fieldValue;
-    //     }
-    //     else if(fieldName==="address")
-    //     {
-    //       address.address=fieldValue;
-    //     }
-    //     else if(fieldName==="state")
-    //     {
-    //       address.state=fieldValue;
-    //     }
-    //     else if(fieldName==="city")
-    //     {
-    //       address.city=fieldValue;
-    //     }
-    //     else if(fieldName==="zipCode")
-    //     {
-    //       address.zipCode=fieldValue;
-    //     }
-
-    // let address={...deliveryAddress};
-    // address[fieldName]=fieldValue;
-
-    // setDeliveryAddress(oldDetails => [...oldDetails, address]);
-    //setDeliveryAddress(address);
-    //setAdSchedule({ ...adSchedule, [name]: val });
     setDeliveryAddress({ ...deliveryAddress, [fieldName]: fieldValue });
+    setAddressError({ ...addressError, [fieldName]: false });
+
     // setOrder(newOrder);
     //setOrder({ ...order,orderDeliverAddress: deliverAddress });
   };
+
+  const onChangeOrderType = deliveryType => {
+    //setOrder({...Order},[orderType]:deliveryType});
+    setOrder({ ...order, ["orderType"]: deliveryType });
+  };
+
+  const isAddressValid = () => {
+    debugger;
+    let nAddressEror = { ...addressError };
+    var isvalid = true;
+    if (order.orderType === 0) {
+      if (deliveryAddress.name === "") {
+        isvalid = false;
+        nAddressEror.name = true;
+        // setAddressError({ ...addressError, name: true });
+      } else {
+        nAddressEror.name = false;
+      }
+      if (
+        deliveryAddress.mobileNumber === "" ||
+        deliveryAddress.mobileNumber.length !== 12
+      ) {
+        isvalid = false;
+        //setAddressError({ ...addressError, mobileNumber: true });
+        nAddressEror.mobileNumber = true;
+      } else {
+        nAddressEror.mobileNumber = false;
+      }
+      if (deliveryAddress.address === "") {
+        isvalid = false;
+        //setAddressError({ ...addressError, address: true });
+        nAddressEror.address = true;
+      } else {
+        nAddressEror.address = false;
+      }
+      if (deliveryAddress.state === "") {
+        isvalid = false;
+        // setAddressError({ ...addressError, state: true });
+        nAddressEror.state = true;
+      } else {
+        nAddressEror.state = false;
+      }
+      if (deliveryAddress.city === "") {
+        isvalid = false;
+        //setAddressError({ ...addressError, city: true });
+        nAddressEror.city = true;
+      } else {
+        nAddressEror.city = false;
+      }
+      if (deliveryAddress.zipCode === "") {
+        isvalid = false;
+        //setAddressError({ ...addressError, zipCode: true });
+        nAddressEror.zipCode = true;
+      } else {
+        nAddressEror.zipCode = false;
+      }
+    } else if (order.orderType === 1) {
+      if (deliveryAddress.name === "") {
+        isvalid = false;
+        //setAddressError({ ...addressError, name: true });
+        nAddressEror.name = true;
+      } else {
+        nAddressEror.name = false;
+      }
+      if (
+        deliveryAddress.mobileNumber === "" ||
+        deliveryAddress.mobileNumber.length !== 12
+      ) {
+        isvalid = false;
+        //setAddressError({ ...addressError, mobileNumber: true });
+        nAddressEror.mobileNumber = true;
+      } else {
+        nAddressEror.mobileNumber = false;
+      }
+    }
+    setAddressError(nAddressEror);
+    return isvalid;
+  };
+
+  const ShowAlert = (variant, title, text) => {
+    setAlertDialog({
+      show: true,
+      title: title,
+      text: text,
+      variant: variant
+    });
+  };
+
+  // const [selectedMethod, setSelectedMethod] = useState(null);
 
   return (
     //  <div className={classes.root}>
@@ -477,7 +638,13 @@ export const OrderLanding = props => {
       <LoadingOverlay open={isLoading} title="Processing Payment.." />
 
       {/* <AppBar color="transparent" position="sticky"> */}
-      {!trigger ? (
+      <Fade
+        in={!trigger}
+        timeout={{
+          enter: 1000,
+          exit: 1000
+        }}
+      >
         <Box>
           <Box boxShadow={0}>
             <CardMedia
@@ -524,8 +691,15 @@ export const OrderLanding = props => {
             </Grid>
           </Box>
         </Box>
-      ) : (
-        // <ElevationScroll {...props}>
+      </Fade>
+      {/* // <ElevationScroll {...props}> */}
+      <Fade
+        in={trigger}
+        timeout={{
+          enter: 1000,
+          exit: 1000
+        }}
+      >
         <AppBar
           position="sticky"
           color="default"
@@ -555,7 +729,7 @@ export const OrderLanding = props => {
             </Grid>
           </Box>
         </AppBar>
-      )}
+      </Fade>
       {/* </AppBar> */}
 
       {/* <AppToolbar
@@ -601,8 +775,10 @@ export const OrderLanding = props => {
             <Grid item xs={12}>
               <OrderAddress
                 address={deliveryAddress}
+                orderType={order.orderType}
                 onAddressChange={onAddressChange}
-                onDeliveryTypeChange={onDeliveryTypeChange}
+                onDeliveryTypeChange={onChangeOrderType}
+                addressError={addressError}
               />
             </Grid>
             {/* <Grid item xs={3}>
@@ -619,15 +795,44 @@ export const OrderLanding = props => {
                 valueId="id"
                 displayName="display"
               />
+
           
             </Grid> */}
+
+            {/* {pMethods && (
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth={true}
+                  variant="outlined"
+                  label="Payment Methods"
+                  select={true}
+                  onChange={e => {
+                    setValue(e.target.value);
+                    onSelected(e.target.value);
+                  }}
+                  value={selectedMethod ? selectedMethod:}
+                  // SelectProps={{
+                  //   MenuProps: {
+                  //     className: classes.menu
+                  //   }
+                  // }}
+                >
+                  {pMethods.length > 0 &&
+                    pMethods.map(p => {
+                      return (
+                        <MenuItem key={p.paymentMethodId} value={p.paymentMethodId}>
+                          {`${p.brand} ${p.last4}`}
+                        </MenuItem>
+                      );
+                    })}
+                </TextField>
+              </Grid>
+            )} */}
+
             <Grid item xs={12}>
               <OrderPayment
                 order={order}
-                isValid={
-                  deliveryAddress.name !== "" &&
-                  deliveryAddress.mobileNumber !== ""
-                }
+                isValid={true}
                 myKey={myInfo === null ? "" : myInfo.stripeTestKey}
                 onPayment={onPayment}
               />
@@ -635,6 +840,14 @@ export const OrderLanding = props => {
           </Grid>
         </div>
       </div>
+      <AlertDialog
+        open={alertDialog.show}
+        close={() => setAlertDialog({ ...alertDialog, show: false })}
+        title={alertDialog.title}
+        text={alertDialog.text}
+        logo={myInfo.merlinLogoUrl}
+        variant={alertDialog.variant}
+      />
     </Container>
     // </div>
   );
