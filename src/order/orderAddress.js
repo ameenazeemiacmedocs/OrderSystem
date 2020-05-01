@@ -70,7 +70,7 @@ export const OrderAddress = props => {
           <Tab label="Take Away" />
         </Tabs>
       </Paper>
-      {address !== null && address !== undefined && deliveryType === 0 && (
+      {address !== null && address !== undefined && (
         <Card raised={true}>
           {/* <CardHeader title="Delivery Address" /> */}
           <CardContent>
@@ -80,7 +80,7 @@ export const OrderAddress = props => {
                   label="Name"
                   fullWidth
                   required
-                  error={address.name === ""}
+                  //error={address.name === ""}
                   variant="outlined"
                   value={address.name}
                   InputLabelProps={{ shrink: true }}
@@ -89,10 +89,11 @@ export const OrderAddress = props => {
               </Grid>
               <Grid item xm="4" xs="12">
                 <MaterialUiPhoneNumber
-                  required={false}
+                  required={true}
                   defaultCountry="us"
                   variant="outlined"
                   name="MobileNumber"
+                  onlyCountries={["us"]}
                   onChange={addressHandleChange("mobileNumber")}
                   // inputProps={{
                   //   minLength: 17,
@@ -107,67 +108,64 @@ export const OrderAddress = props => {
                   label="Phone Number"
                   value={address.mobileNumber}
                 />
-                {/* <TextField
-                  label="Mobile"
-                  fullWidth
-                  type="phoneNumber"
-                  required
-                  variant="outlined"
-                  error={
-                    address.mobileNumber === "" ||
-                    address.mobileNumber.length < 10
-                  }
-                  value={address.mobileNumber}
-                  InputLabelProps={{ shrink: true }}
-                  onChange={addressHandleChange("mobileNumber")}
-                /> */}
-              </Grid>
-              <Grid item xs="12">
-                <TextField
-                  label="Address"
-                  fullWidth
-                  required={deliveryType === 0}
-                  variant="outlined"
-                  multiline="true"
-                  row="4"
-                  InputLabelProps={{ shrink: true }}
-                  value={address.address}
-                  onChange={addressHandleChange("address")}
-                />
               </Grid>
 
-              <Grid item xs="4">
-                <TextField
-                  label="City"
-                  InputLabelProps={{ shrink: true }}
-                  fullWidth
-                  //required
-                  variant="outlined"
-                  value={address.city}
-                  onChange={addressHandleChange("city")}
-                />
-              </Grid>
-              <Grid item xs="4">
-                <TextField
-                  label="State"
-                  InputLabelProps={{ shrink: true }}
-                  fullWidth
-                  //required
-                  variant="outlined"
-                  value={address.state}
-                  onChange={addressHandleChange("state")}
-                />
-              </Grid>
-              <Grid item xs="4">
-                <TextField
-                  label="Zip"
-                  InputLabelProps={{ shrink: true }}
-                  fullWidth
-                  variant="outlined"
-                  value={address.zipCode}
-                  onChange={addressHandleChange("zipCode")}
-                />
-              </Grid>
+              {deliveryType === 0 && (
+                <Grid item xs="12">
+                  <TextField
+                    label="Address"
+                    fullWidth
+                    required={deliveryType === 0}
+                    variant="outlined"
+                    multiline="true"
+                    row="4"
+                    InputLabelProps={{ shrink: true }}
+                    value={address.address}
+                    onChange={addressHandleChange("address")}
+                  />
+                </Grid>
+              )}
+              {deliveryType === 0 && (
+                <Grid item xs="4">
+                  <TextField
+                    label="City"
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                    required={deliveryType === 0}
+                    //required
+                    variant="outlined"
+                    value={address.city}
+                    onChange={addressHandleChange("city")}
+                  />
+                </Grid>
+              )}
+              {deliveryType === 0 && (
+                <Grid item xs="4">
+                  <TextField
+                    label="State"
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                    required={deliveryType === 0}
+                    //required
+                    variant="outlined"
+                    value={address.state}
+                    onChange={addressHandleChange("state")}
+                  />
+                </Grid>
+              )}
+              {deliveryType === 0 && (
+                <Grid item xs="4">
+                  <TextField
+                    label="Zip"
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                    required={deliveryType === 0}
+                    variant="outlined"
+                    value={address.zipCode}
+                    onChange={addressHandleChange("zipCode")}
+                  />
+                </Grid>
+              )}
             </Grid>
           </CardContent>
         </Card>

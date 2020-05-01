@@ -14,14 +14,16 @@ export const LandingPage = () => {
   const [myTheme, setMyTheme] = useState(
     createMuiTheme({
       typography: {
-        fontFamily: ["Nunito Sans"].join(","),
+        fontFamily: ["Quicksand"].join(","),
         fontSize: 14,
         fontWeightLight: "300",
-        fontWeightRegular: "400",
+        fontWeightRegular: "500",
+        fontWeightBold: "700",
         button: {
           fontWeight: "bold",
-          fontSize: "0.8rem"
-        }
+          fontSize: "0.92rem"
+        },
+        MuiInputBase: {}
 
         //  ListItemText: { fontSize: "10rem" }
         //MuiListItemText-root: { fontSize: "5rem," }
@@ -126,7 +128,7 @@ export const LandingPage = () => {
         ])
         .then(
           axios.spread((...responses) => {
-            debugger;
+            // debugger;
             setFoodMenus(responses[0].data);
             // console.log(responses[1]);
             setMyInfo(responses[1].data);

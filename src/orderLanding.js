@@ -64,6 +64,9 @@ const useStyles = makeStyles(theme => ({
     height: "100%"
     // marginBottom: 5
   },
+  containerRoot: {
+    paddingLeft: theme.spacing(0)
+  },
   contentRoot: {},
 
   title: {
@@ -464,134 +467,126 @@ export const OrderLanding = props => {
   };
 
   return (
-    <div className={classes.root}>
-      {/* <Container disableGutters="false" maxWidth="xs"> */}
-      <Container disableGutters maxWidth="xs">
-        <LoadingOverlay open={isLoading} title="Processing Payment.." />
+    //  <div className={classes.root}>
+    // {/* <Container disableGutters="false" maxWidth="xs"> */}
+    <Container
+      disableGutters={true}
+      className={classes.containerRoot}
+      maxWidth="xs"
+    >
+      <LoadingOverlay open={isLoading} title="Processing Payment.." />
 
-        {/* <AppBar color="transparent" position="sticky"> */}
-        {!trigger ? (
-          <Box>
-            <Box boxShadow={0}>
-              <CardMedia
-                component="img"
-                //height="75"
-                className={classes.media}
-                image={myInfo.logoUrl}
-                title=""
-              />
-            </Box>
-            <Box
-              color="secondary.main"
-              //fontFamily="GothamRounded"
-              //fontWeight={500}
-              // fontSize="h6.fontSize"
-              textAlign="left"
-              fontSize={18}
-              fontWeight={400}
-              m={1}
-            >
-              Your order will be delivered between 7:15 and 7:45
-            </Box>
-            <Box
-              p={0}
-              m={1}
-              color="primary.main"
-              fontSize={18}
-              fontWeight="300"
-            >
-              <Grid container alignItems="center" spacing={1}>
-                <Grid item xs={2}>
-                  <Avatar
-                    variant="square"
-                    src={myInfo.merlinLogoUrl}
-                    className={classes.merlin}
-                  >
-                    M
-                  </Avatar>
-                </Grid>
-                <Grid item xs={10}>
-                  Welcome! This is how your order
-                </Grid>
-              </Grid>
-            </Box>
+      {/* <AppBar color="transparent" position="sticky"> */}
+      {!trigger ? (
+        <Box>
+          <Box boxShadow={0}>
+            <CardMedia
+              component="img"
+              //height="75"
+              className={classes.media}
+              image={myInfo.logoUrl}
+              title=""
+            />
           </Box>
-        ) : (
-          // <ElevationScroll {...props}>
-          <AppBar
-            position="sticky"
-            color="default"
-            classes={{ positionSticky: classes.AppBarpositionSticky }}
+          <Box
+            color="secondary.main"
+            //fontFamily="GothamRounded"
+            //fontWeight={500}
+            // fontSize="h6.fontSize"
+            textAlign="left"
+            fontSize={18}
+            fontWeight={600}
+            m={1}
           >
-            <Box
-              p={0}
-              m={1}
-              color="primary.main"
-              fontSize={18}
-              fontWeight={400}
-            >
-              <Grid container alignItems="center" spacing={5}>
-                <Grid item xs={2}>
-                  <Avatar
-                    variant="square"
-                    // className={classes.merlin}
-                    src={myInfo.bandUrl}
-                  >
-                    P
-                  </Avatar>
-                </Grid>
-                <Grid item xs={10}>
-                  Your order will be delivered between 7:15 and 7:45
-                </Grid>
+            Your order will be delivered between 7:15 and 7:45
+          </Box>
+          <Box p={0} m={1} color="primary.main" fontSize={18} fontWeight="500">
+            <Grid container alignItems="center" spacing={1}>
+              <Grid item xs={2}>
+                <Avatar
+                  variant="square"
+                  src={myInfo.merlinLogoUrl}
+                  className={classes.merlin}
+                >
+                  M
+                </Avatar>
               </Grid>
-            </Box>
-          </AppBar>
-        )}
-        {/* </AppBar> */}
+              <Grid item xs={10}>
+                Welcome! This is how your order
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+      ) : (
+        // <ElevationScroll {...props}>
+        <AppBar
+          position="sticky"
+          color="default"
+          classes={{ positionSticky: classes.AppBarpositionSticky }}
+        >
+          <Box p={0} m={1} color="primary.main" fontSize={15} fontWeight={600}>
+            <Grid container alignItems="center" spacing={5}>
+              <Grid item xs={2}>
+                <Avatar
+                  variant="square"
+                  // className={classes.merlin}
+                  src={myInfo.bandUrl}
+                >
+                  P
+                </Avatar>
+              </Grid>
+              <Grid item xs={10}>
+                Your order will be delivered between 7:15 and 7:45
+              </Grid>
+            </Grid>
+          </Box>
+        </AppBar>
+      )}
+      {/* </AppBar> */}
 
-        {/* <AppToolbar
+      {/* <AppToolbar
         topLogo={blackLogo}
         merlinLogo={
           "https://posigentcom-my.sharepoint.com/personal/usman_mahmood_posigent_com/Documents/logo/merlin-logo.png"
         }
       /> */}
-        <Divider />
-        <div className={classes.contentRoot}>
-          {guests.map(g => (
-            <GuestOrder
-              key={g.guestId}
-              guestName={g.guestName}
-              guestId={g.guestId}
-              totalItems={g.totalItems}
-              totalAmount={g.totalAmount}
-              orderDetails={order.orderDetails}
-              onChangeQty={onChangeQty}
-              onGuestHandleClick={onGuestHandleClick}
-              isGuestOpen={isGuestOpen(g.guestId)}
-              order={order}
-              foodMenus={foodMenu}
-              onChangeGuestTitle={onChangeGuestTitle}
-            />
-          ))}
-          {/* {trigger ? "Trigger" : "Not Trigger"} */}
-          <div>
-            <Grid container spacing={2} justify="flex-end">
-              <Grid item>
-                <Button variant="contained" color="primary" onClick={addGuest}>
-                  Add Another Guest
-                </Button>
-              </Grid>
-              <Grid item xs={12}>
-                <OrderTotals order={order} />
-              </Grid>
-              <Grid item xs={12}>
-                <OrderAddress
-                  address={deliveryAddress}
-                  onAddressChange={onAddressChange}
-                  onDeliveryTypeChange={onDeliveryTypeChange}
-                />
-              </Grid>
-              {/* <Grid item xs={3}>
+      <Divider />
+      <div className={classes.contentRoot}>
+        {guests.map(g => (
+          <GuestOrder
+            key={g.guestId}
+            guestName={g.guestName}
+            guestId={g.guestId}
+            totalItems={g.totalItems}
+            totalAmount={g.totalAmount}
+            orderDetails={order.orderDetails}
+            onChangeQty={onChangeQty}
+            onGuestHandleClick={onGuestHandleClick}
+            isGuestOpen={isGuestOpen(g.guestId)}
+            order={order}
+            foodMenus={foodMenu}
+            onChangeGuestTitle={onChangeGuestTitle}
+          />
+        ))}
+        {/* {trigger ? "Trigger" : "Not Trigger"} */}
+        <div>
+          <Grid container spacing={2} justify="flex-end">
+            <Grid item>
+              <Button variant="contained" color="primary" onClick={addGuest}>
+                Add Another Guest
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <OrderTotals order={order} />
+            </Grid>
+            <Grid item xs={12}>
+              <OrderAddress
+                address={deliveryAddress}
+                onAddressChange={onAddressChange}
+                onDeliveryTypeChange={onDeliveryTypeChange}
+              />
+            </Grid>
+            {/* <Grid item xs={3}>
               <DropdownSelector
                 onSelected={val => {
                   alert("Selected " + val);
@@ -607,22 +602,22 @@ export const OrderLanding = props => {
               />
           
             </Grid> */}
-              <Grid item xs={12}>
-                <OrderPayment
-                  order={order}
-                  isValid={
-                    deliveryAddress.name !== "" &&
-                    deliveryAddress.mobileNumber !== ""
-                  }
-                  myKey={myInfo === null ? "" : myInfo.stripeTestKey}
-                  onPayment={onPayment}
-                />
-              </Grid>
+            <Grid item xs={12}>
+              <OrderPayment
+                order={order}
+                isValid={
+                  deliveryAddress.name !== "" &&
+                  deliveryAddress.mobileNumber !== ""
+                }
+                myKey={myInfo === null ? "" : myInfo.stripeTestKey}
+                onPayment={onPayment}
+              />
             </Grid>
-          </div>
+          </Grid>
         </div>
-      </Container>
-    </div>
+      </div>
+    </Container>
+    // </div>
   );
 
   Array.prototype.remove = function(from, to) {
