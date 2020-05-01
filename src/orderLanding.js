@@ -625,7 +625,7 @@ export const OrderLanding = props => {
     });
   };
 
-  // const [selectedMethod, setSelectedMethod] = useState(null);
+  const [selectedMethod, setSelectedMethod] = useState(null);
 
   return (
     //  <div className={classes.root}>
@@ -638,13 +638,14 @@ export const OrderLanding = props => {
       <LoadingOverlay open={isLoading} title="Processing Payment.." />
 
       {/* <AppBar color="transparent" position="sticky"> */}
-      <Fade
+      {/* <Fade
         in={!trigger}
         timeout={{
           enter: 1000,
           exit: 1000
         }}
-      >
+      > */}
+      {!trigger ? (
         <Box>
           <Box boxShadow={0}>
             <CardMedia
@@ -691,15 +692,15 @@ export const OrderLanding = props => {
             </Grid>
           </Box>
         </Box>
-      </Fade>
-      {/* // <ElevationScroll {...props}> */}
-      <Fade
-        in={trigger}
-        timeout={{
-          enter: 1000,
-          exit: 1000
-        }}
-      >
+      ) : (
+        // </Fade>
+        // <Fade
+        //   in={trigger}
+        //   timeout={{
+        //     enter: 1000,
+        //     exit: 1000
+        //   }}
+        // >
         <AppBar
           position="sticky"
           color="default"
@@ -729,7 +730,8 @@ export const OrderLanding = props => {
             </Grid>
           </Box>
         </AppBar>
-      </Fade>
+      )}
+      {/* // </Fade> */}
       {/* </AppBar> */}
 
       {/* <AppToolbar
@@ -799,40 +801,11 @@ export const OrderLanding = props => {
           
             </Grid> */}
 
-            {/* {pMethods && (
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth={true}
-                  variant="outlined"
-                  label="Payment Methods"
-                  select={true}
-                  onChange={e => {
-                    setValue(e.target.value);
-                    onSelected(e.target.value);
-                  }}
-                  value={selectedMethod ? selectedMethod:}
-                  // SelectProps={{
-                  //   MenuProps: {
-                  //     className: classes.menu
-                  //   }
-                  // }}
-                >
-                  {pMethods.length > 0 &&
-                    pMethods.map(p => {
-                      return (
-                        <MenuItem key={p.paymentMethodId} value={p.paymentMethodId}>
-                          {`${p.brand} ${p.last4}`}
-                        </MenuItem>
-                      );
-                    })}
-                </TextField>
-              </Grid>
-            )} */}
-
             <Grid item xs={12}>
               <OrderPayment
                 order={order}
                 isValid={true}
+                pMethods={pMethods}
                 myKey={myInfo === null ? "" : myInfo.stripeTestKey}
                 onPayment={onPayment}
               />

@@ -256,6 +256,38 @@ const SplitForm = props => {
             label="Save for future payments"
           />
         </Grid>
+
+        {/* {props.pMethods && (
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth={true}
+                  variant="outlined"
+                  label="Payment Methods"
+                  select={true}
+                  onChange={e => {
+                   // setSelectedMethod(e.target.value)
+                    // setValue(e.target.value);
+                    // onSelected(e.target.value);
+                  }}
+                  value={selectedMethod ? selectedMethod:pMethods[0]}
+                  // SelectProps={{
+                  //   MenuProps: {
+                  //     className: classes.menu
+                  //   }
+                  // }}
+                >
+                  {pMethods.length > 0 &&
+                    pMethods.map(p => {
+                      return (
+                        <MenuItem key={p.paymentMethodId} value={p}>
+                          {`${p.brand} ${p.last4}`}
+                        </MenuItem>
+                      );
+                    })}
+                </TextField>
+              </Grid>
+            )} */}
+
         <Grid item xs={12}>
           <Button
             type="submit"
