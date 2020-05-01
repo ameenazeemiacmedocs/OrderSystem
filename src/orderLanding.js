@@ -490,7 +490,7 @@ export const OrderLanding = props => {
           </Box>
           <Box
             color="secondary.main"
-            //fontFamily="GothamRounded"
+            fontFamily="Quicksand"
             //fontWeight={500}
             // fontSize="h6.fontSize"
             textAlign="left"
@@ -500,7 +500,14 @@ export const OrderLanding = props => {
           >
             Your order will be delivered between 7:15 and 7:45
           </Box>
-          <Box p={0} m={1} color="primary.main" fontSize={18} fontWeight="500">
+          <Box
+            p={0}
+            m={1}
+            color="primary.main"
+            fontSize={18}
+            fontWeight="500"
+            fontFamily="Quicksand"
+          >
             <Grid container alignItems="center" spacing={1}>
               <Grid item xs={2}>
                 <Avatar
@@ -524,7 +531,14 @@ export const OrderLanding = props => {
           color="default"
           classes={{ positionSticky: classes.AppBarpositionSticky }}
         >
-          <Box p={0} m={1} color="primary.main" fontSize={15} fontWeight={600}>
+          <Box
+            p={0}
+            m={1}
+            color="primary.main"
+            fontSize={15}
+            fontWeight={600}
+            fontFamily="Quicksand"
+          >
             <Grid container alignItems="center" spacing={5}>
               <Grid item xs={2}>
                 <Avatar
@@ -551,7 +565,7 @@ export const OrderLanding = props => {
         }
       /> */}
       <Divider />
-      <div className={classes.contentRoot}>
+      <div>
         {guests.map(g => (
           <GuestOrder
             key={g.guestId}
@@ -572,7 +586,12 @@ export const OrderLanding = props => {
         <div>
           <Grid container spacing={2} justify="flex-end">
             <Grid item>
-              <Button variant="contained" color="primary" onClick={addGuest}>
+              <Button
+                variant="contained"
+                color="primary"
+                fontFamily="Quicksand"
+                onClick={addGuest}
+              >
                 Add Another Guest
               </Button>
             </Grid>

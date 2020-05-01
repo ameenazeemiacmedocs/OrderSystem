@@ -57,6 +57,7 @@ export const LandingPage = () => {
   const [foodMenu, setFoodMenus] = useState(null);
   const [myInfo, setMyInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [defaultOrder, setDefOrder] = useState(null);
   //const [paymentSuccessfull,setPaymentSuccessfull]=useState(false);
   const [payment, setPayment] = useState(
     null
@@ -80,6 +81,7 @@ export const LandingPage = () => {
   // effect on having client
   useEffect(() => {
     console.log("Client Effect");
+
     if (client === "") {
       var clientParam = getParameterByName("c");
       if (clientParam === "" || clientParam === null) {
@@ -95,9 +97,9 @@ export const LandingPage = () => {
     }
 
     if (foodMenu == null && client !== "") {
-      // axios.defaults.headers.common["CLIENT_CODE"] = client;
-      // var formData = new FormData();
-      // formData.append("source", clientSource);
+      axios.defaults.headers.common["CLIENT_CODE"] = client;
+      var formData = new FormData();
+      formData.append("source", clientSource);
       // axios.post(`${apiURL}orders/defaultOrder`, formData, {
       //   headers: { 'content-type': 'multipart/form-data', 'CLIENT_CODE': client }
       // }).then(result => {
@@ -124,6 +126,12 @@ export const LandingPage = () => {
               "content-type": "multipart/form-data",
               CLIENT_CODE: client
             }
+          }),
+          axios.post(`${apiURL}orders/defaultOrder`, formData, {
+            headers: {
+              "content-type": "multipart/form-data",
+              CLIENT_CODE: client
+            }
           })
         ])
         .then(
@@ -132,6 +140,7 @@ export const LandingPage = () => {
             setFoodMenus(responses[0].data);
             // console.log(responses[1]);
             setMyInfo(responses[1].data);
+            setDefOrder(responses[2].data);
             setIsLoading(false);
           })
         )
@@ -196,6 +205,7 @@ export const LandingPage = () => {
             source={source}
             foodMenu={foodMenu}
             myInfo={myInfo}
+            defaultOrder={defaultOrder}
             onPaymentSuccess={onPaymentSuccess}
           />
         )}
