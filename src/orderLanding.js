@@ -50,7 +50,7 @@ import { foodMenus } from "./data";
 import { FoodArea } from "./FoodMenu";
 import LoadingOverlay from "./common/LoadingOverlay";
 import AlertDialog from "./common/AlertDialog";
-
+import Link from "@material-ui/core/Link";
 import Slide from "@material-ui/core/Slide";
 
 //import CreditCardDetail from "./Cards/CreditCardDetail";
@@ -67,7 +67,26 @@ const useStyles = makeStyles(theme => ({
     // marginBottom: 5
   },
   containerRoot: {
-    paddingLeft: theme.spacing(0)
+    // paddingLeft: theme.spacing(0),
+    // marginLeft:0,
+    // marginRight:0,
+    [theme.breakpoints.up("xs")]: {
+      paddingLeft: theme.spacing(0),
+      paddingRight: theme.spacing(0)
+      // marginLeft:theme.spacing(0),
+      //width:"100%"
+    }
+  },
+  dividerRoot: {
+    height: 4,
+    margin: 0, // Reset browser default style.
+    border: "none",
+    flexShrink: 0,
+    backgroundColor: theme.palette.primary.main,
+    marginLeft: theme.spacing(10),
+    marginRight: theme.spacing(10),
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(3)
   },
   contentRoot: {},
 
@@ -87,10 +106,15 @@ const useStyles = makeStyles(theme => ({
     height: theme.spacing(7)
   },
   merlin: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
-    color: theme.palette.getContrastText(blue[500]),
-    backgroundColor: theme.palette.primary.main
+    width: theme.spacing(11),
+    height: theme.spacing(14)
+    // height: "100%"
+    //color: theme.palette.getContrastText(blue[500]),
+    //backgroundColor: theme.palette.primary.main
+  },
+  appBarAvatar: {
+    height: theme.spacing(6),
+    width: theme.spacing(5)
   },
   toolbarContent: {
     display: "flex",
@@ -138,7 +162,7 @@ const useStyles = makeStyles(theme => ({
 
 export const OrderLanding = props => {
   const trigger = useScrollTrigger({ threshold: 0, disableHysteresis: true });
-
+  const preventDefault = event => event.preventDefault();
   const stripe = useStripe();
   const elements = useElements();
   const {
@@ -656,6 +680,43 @@ export const OrderLanding = props => {
               title=""
             />
           </Box>
+          {/* <Divider va className={classes.dividerRoot} /> */}
+
+          <Box
+            p={0}
+            m={1}
+            color="primary.main"
+            fontSize={18}
+            fontWeight="500"
+            fontFamily="Quicksand"
+          >
+            <Grid
+              container
+              alignItems="center"
+              // alignContent="flex-start"
+              justify="flex-start"
+              spacing={0}
+            >
+              <Grid item xs="4">
+                <Avatar
+                  variant="square"
+                  src={myInfo.merlinLogoUrl}
+                  className={classes.merlin}
+                >
+                  M
+                </Avatar>
+              </Grid>
+              <Grid item xs="8" wrap="nowrap">
+                Bonjour!
+                <br /> Thank you for choosing Bleu Boheme. My name is Chloe and
+                I'll help you complete your order.
+                <Link> Tap here for a quick tutorial.</Link>
+                {/* <Link href="#" onClick={preventDefault}>   tutorial.*/}
+                {/* </Link> */}
+              </Grid>
+            </Grid>
+          </Box>
+
           <Box
             color="secondary.main"
             fontFamily="Quicksand"
@@ -666,30 +727,9 @@ export const OrderLanding = props => {
             fontWeight={600}
             m={1}
           >
-            Your order will be delivered between 7:15 and 7:45
-          </Box>
-          <Box
-            p={0}
-            m={1}
-            color="primary.main"
-            fontSize={18}
-            fontWeight="500"
-            fontFamily="Quicksand"
-          >
-            <Grid container alignItems="center" spacing={1}>
-              <Grid item xs={2}>
-                <Avatar
-                  variant="square"
-                  src={myInfo.merlinLogoUrl}
-                  className={classes.merlin}
-                >
-                  M
-                </Avatar>
-              </Grid>
-              <Grid item xs={10}>
-                Welcome! This is how your order
-              </Grid>
-            </Grid>
+            Pick-up time after 7:05
+            <br />
+            Delivery time from 7:15 to 7:40
           </Box>
         </Box>
       ) : (
@@ -709,7 +749,7 @@ export const OrderLanding = props => {
           <Box
             p={0}
             m={1}
-            color="primary.main"
+            color="secondary.main"
             fontSize={15}
             fontWeight={600}
             fontFamily="Quicksand"
@@ -718,14 +758,16 @@ export const OrderLanding = props => {
               <Grid item xs={2}>
                 <Avatar
                   variant="square"
-                  // className={classes.merlin}
+                  className={classes.appBarAvatar}
                   src={myInfo.bandUrl}
                 >
                   P
                 </Avatar>
               </Grid>
               <Grid item xs={10}>
-                Your order will be delivered between 7:15 and 7:45
+                Pick-up time after 7:05
+                <br />
+                Delivery time from 7:15 to 7:40
               </Grid>
             </Grid>
           </Box>

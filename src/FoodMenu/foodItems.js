@@ -21,7 +21,10 @@ const useStyles = makeStyles(theme => ({
   root: {
     width: "100%"
   },
-  primary: { paddingLeft: theme.spacing(1), marginRight: theme.spacing(6) },
+  primary: {
+    paddingLeft: theme.spacing(1),
+    marginRight: theme.spacing(6)
+  },
   nested: {
     paddingLeft: theme.spacing(3)
     //[theme.breakpoints.down("xs")]: {
@@ -141,7 +144,10 @@ export const FoodItems = props => {
           classes={{ primary: classes.primary, secondary: classes.primary }}
           key={props.prodId}
           primary={
-            props.menuItem.fullName + " ($" + props.menuItem.basePrice + ")"
+            props.menuItem.fullName +
+            " ($" +
+            props.menuItem.basePrice.toFixed(2) +
+            ")"
           }
           secondary={props.menuItem.description}
           //classes={{primary:theme.spacing(2)}}

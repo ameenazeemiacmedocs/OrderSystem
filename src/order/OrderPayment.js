@@ -44,7 +44,7 @@ export const OrderPayment = props => {
           >
             <Tab label="Payment Information" />
           </Tabs>
-          <Card raised={true}>
+          <Card raised={false}>
             {/* <CardHeader title="Payment Information" /> */}
             <CardContent>
               {/* // <Elements stripe={stripePromise}> */}

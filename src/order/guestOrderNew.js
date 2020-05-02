@@ -174,7 +174,12 @@ export const GuestOrder = props => {
         //aria-labelledby="nested-list-subheader"
         className={classes.root}
       >
-        <Box bgcolor="secondary.main" border="1" color="primary.contrastText">
+        <Box
+          bgcolor="secondary.main"
+          border="1"
+          fontFamily="Quicksand"
+          color="primary.contrastText"
+        >
           <ListItem
             key={props.guestId}
             button
@@ -268,6 +273,10 @@ export const ChangeNameDialog = props => {
             fullWidth={true}
             value={name}
             inputRef={nameInputRef}
+            onFocus={event => {
+              //event.select();
+              event.target.select();
+            }}
             onChange={event => {
               setName(event.target.value);
             }}

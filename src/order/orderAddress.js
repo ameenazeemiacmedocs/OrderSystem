@@ -78,7 +78,7 @@ export const OrderAddress = props => {
         </Tabs>
       </Paper>
       {address !== null && address !== undefined && (
-        <Card raised={true}>
+        <Card raised={false}>
           {/* <CardHeader title="Delivery Address" /> */}
           <CardContent>
             <Grid container spacing={1} justify="flex-start">
