@@ -21,11 +21,23 @@ const useStyles = makeStyles(theme => ({
   listChoices: {
     paddingLeft: theme.spacing(9)
   },
+  dividerRoot: {
+    // height: 4,
+    //margin: 0, // Reset browser default style.
+    // border: "none",
+    // flexShrink: 0,
+    // backgroundColor: theme.palette.primary.main,
+    //marginLeft: theme.spacing(10),
+    marginRight: theme.spacing(3)
+    // marginTop: theme.spacing(1),
+    //marginBottom: theme.spacing(3)
+  },
   extrasSubHeader: {
-    textAlign: "left",
+    textAlign: "center",
     paddingLeft: "10px",
-    color: "white",
-    fontStyle: "italic",
+    color: theme.palette.primary.contrastText,
+    // fontStyle: "italic",
+    fontWeight: "bold",
     background: theme.palette.primary.main
     // background:
     //   "linear-gradient(90deg, " +
@@ -245,7 +257,7 @@ export const CheckBoxChoices = props => {
           </Grid>
         </Grid>
       </ListItem>
-      <Divider variant="inset" />
+      <Divider variant="inset" className={classes.dividerRoot} />
     </div>
   );
 
@@ -359,7 +371,7 @@ export const RadioChoice = props => {
           </Grid>
         </Grid>
       </ListItem>
-      <Divider variant="inset" />
+      <Divider variant="inset" className={classes.dividerRoot} />
     </div>
   );
 };

@@ -243,7 +243,7 @@ const SplitForm = props => {
             onChange={onElementChange}
           />
         </Grid>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <FormControlLabel
             control={
               <Switch
@@ -255,7 +255,7 @@ const SplitForm = props => {
             }
             label="Save for future payments"
           />
-        </Grid>
+        </Grid> */}
 
         {/* {props.pMethods && (
               <Grid item xs={12}>

@@ -32,6 +32,7 @@ export const OrderAddress = props => {
   const addressHandleChange = name => event => {
     if (name === "mobileNumber") {
       let inputNumber = "+" + event.replace(/\D/gi, "");
+      console.log(inputNumber);
       onAddressChange(name, inputNumber);
     } else {
       var val = event.target.value;
@@ -72,9 +73,9 @@ export const OrderAddress = props => {
           //centered="false"
           variant="fullWidth"
         >
-          <Tab label="Delivery Address" />
+          <Tab label="Delivery" />
 
-          <Tab label="Take Away" />
+          <Tab label="pick-up" />
         </Tabs>
       </Paper>
       {address !== null && address !== undefined && (
@@ -98,6 +99,7 @@ export const OrderAddress = props => {
                 <MaterialUiPhoneNumber
                   required={true}
                   defaultCountry="us"
+                  countryCodeEditable={false}
                   variant="outlined"
                   name="MobileNumber"
                   onlyCountries={["us"]}
