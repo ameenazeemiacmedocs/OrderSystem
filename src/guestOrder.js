@@ -55,7 +55,7 @@ export const GuestOrder = props => {
   const foodAreas = foodMenus.map(
     area =>
       area.menuItems.length > 0 && (
-        <FoodArea key={area.name} area={area} {...props} />
+        <FoodArea key={area.name} area={area} {...props} inId="0" />
       )
   );
 
