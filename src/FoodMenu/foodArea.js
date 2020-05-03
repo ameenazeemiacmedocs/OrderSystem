@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import { Chip, Avatar } from "@material-ui/core";
@@ -24,12 +24,26 @@ const useStyles = makeStyles(theme => ({
 export const FoodArea = props => {
   const classes = useStyles();
   // const [open, setOpen] = React.useState(false);
-
-  const handleClick = () => {
+  const ref = React.createRef();
+  const areaHandleClick = event => {
     //setOpen(!open);
     props.onAreaHandleClick(props.area.id);
+    // console.log(event.target.ownerDocument);
   };
+  // useEffect(() => {
+  //   console.log("Araa is open " + props.isAreaOpen + " of " + props.area.name);
 
+  //   if (props.isAreaOpen) {
+  //     if (ref.current) {
+  //       console.log(ref.current);
+  //       // ref.current.scrollIntoView({
+  //       //   behavior: "smooth",
+  //       //   block: "nearest"
+  //       // });
+  //       ref.current.scrollIntoView(true);
+  //     }
+  //   }
+  // }, [props.isAreaOpen]);
   let areaQty = 0;
 
   const getQty = (menuItem, guestId) => {
@@ -58,10 +72,11 @@ export const FoodArea = props => {
   return (
     <div className={classes.root}>
       <ListItem
+        ref={ref}
         //disableTypography={true}
         key={props.area.id}
         button
-        onClick={handleClick}
+        onClick={areaHandleClick}
         className={classes.nested}
       >
         <ListItemText primary={props.area.name} />
@@ -76,7 +91,26 @@ export const FoodArea = props => {
         )}
         {props.isAreaOpen ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
-      <Collapse in={props.isAreaOpen} timeout="auto" unmountOnExit>
+      <Collapse
+        in={props.isAreaOpen}
+        timeout="auto"
+        unmountOnExit
+        onEntered={() => {
+          console.log("Entered");
+          if (ref.current) {
+            // ref.current.scrollIntoView(false);
+            ref.current.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest"
+              //inline: "nearest"
+            });
+          }
+          // ref.current.scrollIntoView({
+          //   behavior: "smooth",
+          //   block: "nearest"
+          // });
+        }}
+      >
         <List component="div" disablePadding>
           {items}
         </List>

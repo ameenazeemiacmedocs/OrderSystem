@@ -150,7 +150,9 @@ export const GuestOrder = props => {
     props.foodMenus.map(
       area =>
         area.menuItems.length > 0 && (
+          //ref = React.createRef()
           <FoodArea
+            //ref={ref}
             key={area.name}
             area={area}
             onAreaHandleClick={onAreaHandleClick}

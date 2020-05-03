@@ -161,7 +161,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const OrderLanding = props => {
-  const trigger = useScrollTrigger({ threshold: 0, disableHysteresis: true });
+  const trigger = useScrollTrigger({
+    threshold: 250,
+    disableHysteresis: true
+  });
   const preventDefault = event => event.preventDefault();
   const stripe = useStripe();
   const elements = useElements();
@@ -660,16 +663,7 @@ export const OrderLanding = props => {
       maxWidth="xs"
     >
       <LoadingOverlay open={isLoading} title="Processing Payment.." />
-
-      {/* <AppBar color="transparent" position="sticky"> */}
-      {/* <Fade
-        in={!trigger}
-        timeout={{
-          enter: 1000,
-          exit: 1000
-        }}
-      > */}
-      {!trigger ? (
+      <Slide in={!trigger}>
         <Box>
           <Box boxShadow={0}>
             <CardMedia
@@ -732,56 +726,45 @@ export const OrderLanding = props => {
             Delivery time from 7:15 to 7:40
           </Box>
         </Box>
-      ) : (
-        // </Fade>
-        // <Fade
-        //   in={trigger}
-        //   timeout={{
-        //     enter: 1000,
-        //     exit: 1000
-        //   }}
-        // >
-        <AppBar
-          position="sticky"
-          color="default"
-          classes={{ positionSticky: classes.AppBarpositionSticky }}
-        >
-          <Box
-            p={0}
-            m={1}
-            color="secondary.main"
-            fontSize={15}
-            fontWeight={600}
-            fontFamily="Quicksand"
+      </Slide>
+      <Slide in={trigger}>
+        {trigger ? (
+          <AppBar
+            position="sticky"
+            color="default"
+            classes={{ positionSticky: classes.AppBarpositionSticky }}
           >
-            <Grid container alignItems="center" spacing={5}>
-              <Grid item xs={2}>
-                <Avatar
-                  variant="square"
-                  className={classes.appBarAvatar}
-                  src={myInfo.bandUrl}
-                >
-                  P
-                </Avatar>
+            <Box
+              p={0}
+              m={1}
+              color="secondary.main"
+              fontSize={15}
+              fontWeight={600}
+              fontFamily="Quicksand"
+            >
+              <Grid container alignItems="center" spacing={5}>
+                <Grid item xs={2}>
+                  <Avatar
+                    variant="square"
+                    className={classes.appBarAvatar}
+                    src={myInfo.bandUrl}
+                  >
+                    P
+                  </Avatar>
+                </Grid>
+                <Grid item xs={10}>
+                  Pick-up time after 7:05
+                  <br />
+                  Delivery time from 7:15 to 7:40
+                </Grid>
               </Grid>
-              <Grid item xs={10}>
-                Pick-up time after 7:05
-                <br />
-                Delivery time from 7:15 to 7:40
-              </Grid>
-            </Grid>
-          </Box>
-        </AppBar>
-      )}
-      {/* // </Fade> */}
-      {/* </AppBar> */}
+            </Box>
+          </AppBar>
+        ) : (
+          <div />
+        )}
+      </Slide>
 
-      {/* <AppToolbar
-        topLogo={blackLogo}
-        merlinLogo={
-          "https://posigentcom-my.sharepoint.com/personal/usman_mahmood_posigent_com/Documents/logo/merlin-logo.png"
-        }
-      /> */}
       <Divider />
       <div>
         {guests.map(g => (
